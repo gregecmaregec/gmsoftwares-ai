@@ -100,8 +100,108 @@ h1 {
   border-radius: 24px;
   transition: all 0.3s ease;
   box-shadow: none;
+  border: none;
   overflow: hidden;
   padding: 0;
+  position: relative;
+}
+
+/* Add the light beam effect that disappears on focus */
+.search-input-wrapper:not(.focused)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(99, 102, 241, 0.15) 20%,
+    rgba(139, 92, 246, 0.15) 50%,
+    transparent
+  );
+  z-index: 1;
+  animation: light-beam 4s cubic-bezier(0.4, 0.0, 0.2, 1) 1;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Add subtle border glow that also disappears on focus */
+.search-input-wrapper:not(.focused) {
+  animation: remove-box-shadow 4s ease-in-out 1 forwards;
+}
+
+/* Subtle pulsing border light effect */
+.search-input-wrapper:not(.focused)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg, 
+    rgba(99, 102, 241, 0.15), 
+    rgba(139, 92, 246, 0.15) 50%,
+    rgba(99, 102, 241, 0.15)
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: border-pulse 4s ease-in-out 1 forwards;
+  will-change: opacity;
+  pointer-events: none;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion) {
+  .search-input-wrapper:not(.focused)::before,
+  .search-input-wrapper:not(.focused)::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@keyframes border-pulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes light-beam {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes remove-box-shadow {
+  0% {
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.05);
+  }
+  95% {
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.02);
+  }
+  100% {
+    box-shadow: none;
+  }
 }
 
 .search-input-wrapper.expanded {
@@ -167,22 +267,23 @@ h1 {
 }
 
 .model-selector-container {
-  align-self: center;
+  align-self: flex-start;
   margin-top: 8px;
   position: relative;
   user-select: none;
+  padding-left: 22px;
 }
 
 .model-selector-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
   color: var(--text-color);
   font-size: 0.65rem;
   opacity: 0.4;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 6px 12px 6px 0;
   border-radius: 16px;
   transition: all 0.2s ease;
 }
@@ -295,6 +396,7 @@ h1 {
 
 .search-input-wrapper.focused {
   box-shadow: 0 0 0 1px rgba(125, 125, 125, 0.1);
+  border: none;
 }
 
 @keyframes fadeIn {
