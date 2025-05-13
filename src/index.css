@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* No transition during page load to prevent flash */
+html, body {
+  transition: none !important;
+}
+
+/* Apply transition after page load */
+html.loaded, html.loaded body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
 :root {
   /* Common variables for both themes */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -41,7 +51,7 @@ body {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  /* Transition is now controlled by the html.loaded selectors above */
   overflow-x: hidden;
 }
 

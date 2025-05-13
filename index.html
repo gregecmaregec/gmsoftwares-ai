@@ -5,6 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>gmsoftwares.ai</title>
+    <script>
+      // Prevent flash of wrong theme by setting the theme before page renders
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        const isDark = savedTheme === 'dark' || 
+          (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        if (isDark) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          // Set background color directly to avoid flash
+          document.documentElement.style.backgroundColor = '#000000';
+          // When DOM is ready, set body background too
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.backgroundColor = '#000000';
+          });
+        } else {
+          // For light theme, ensure no dark background lingers
+          document.documentElement.style.backgroundColor = '#ffffff';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
