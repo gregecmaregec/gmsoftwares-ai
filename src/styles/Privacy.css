@@ -1,0 +1,48 @@
+.privacy-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  color: var(--text-color);
+}
+
+.privacy-section {
+  margin: 2rem 0;
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 1.5rem 0 1rem 0;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+ul {
+  margin: 1rem 0 1.5rem 2rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+.back-link {
+  margin-top: 2rem;
+}
+
+.back-link a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+} 

@@ -1,0 +1,46 @@
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  color: var(--text-color);
+  background-color: var(--secondary-bg);
+  transition: background-color 0.2s, color 0.2s;
+  opacity: 0.8;
+  box-shadow: 0 0 0 1px rgba(125, 125, 125, 0.1);
+}
+
+.theme-icon {
+  color: var(--text-color);
+  opacity: 1;
+  stroke-width: 2px;
+}
+
+.theme-toggle:hover {
+  background-color: var(--secondary-bg);
+  opacity: 1;
+}
+
+.theme-toggle:hover .theme-icon {
+  color: var(--link-color);
+}
+
+.theme-toggle:focus {
+  outline: none;
+  opacity: 1;
+}
+
+/* Avoid default button styling from App.css */
+.theme-toggle:focus,
+.theme-toggle:focus-visible {
+  outline: none;
+} 
