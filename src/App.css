@@ -25,7 +25,7 @@
   align-items: center;
   flex-grow: 1;
   justify-content: center;
-  padding-bottom: 4vh;
+  padding-bottom: 5.5vh;
 }
 
 h1 {
@@ -68,7 +68,7 @@ h1 {
 
 .message.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.7), rgba(139, 92, 246, 0.7));
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -112,6 +112,7 @@ h1 {
 .search-input {
   width: 100%;
   padding: 12px 22px;
+  padding-right: 45px; /* Make room for the send button */
   background-color: transparent;
   color: var(--text-color);
   font-size: 0.95rem;
@@ -122,7 +123,30 @@ h1 {
   overflow-y: hidden;
   line-height: 1.5;
   max-height: 200px;
-  text-align: center;
+  text-align: left;
+}
+
+.search-input::placeholder {
+  text-align: left;
+  opacity: 0.75;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* Make sure the placeholder has consistent styling across browsers */
+.search-input::-webkit-input-placeholder {
+  opacity: 0.75;
+  color: var(--text-color);
+}
+
+.search-input::-moz-placeholder {
+  opacity: 0.75;
+  color: var(--text-color);
+}
+
+.search-input:-ms-input-placeholder {
+  opacity: 0.75;
+  color: var(--text-color);
 }
 
 .search-input-wrapper.expanded .search-input {
@@ -132,6 +156,14 @@ h1 {
 .search-input:focus {
   outline: none;
   text-align: left;
+}
+
+.search-input:focus::placeholder,
+.search-input:focus::-webkit-input-placeholder,
+.search-input:focus::-moz-placeholder,
+.search-input:focus:-ms-input-placeholder {
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
 .model-selector-container {
@@ -178,7 +210,7 @@ h1 {
 .brain-icon {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
-  opacity: 0.6;
+  opacity: 0.95;
 }
 
 .model-arrow {
@@ -397,4 +429,43 @@ h1 {
 
 .back-link a:hover {
   text-decoration: underline;
+}
+
+.send-button {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  opacity: 0.15;
+}
+
+.send-button:hover {
+  background-color: rgba(125, 125, 125, 0.1);
+}
+
+.send-button.active {
+  opacity: 0.7;
+}
+
+.send-button:focus {
+  outline: none;
+}
+
+.send-icon {
+  stroke: url(#send-gradient);
+  stroke-width: 2;
+}
+
+/* Add another SVG gradient definition for the send icon */
+
+.gm-link {
+  font-family: 'Tiro Kannada', serif;
+  letter-spacing: 0.02em;
 }

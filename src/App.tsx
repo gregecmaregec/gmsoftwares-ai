@@ -5,7 +5,7 @@ import { useTheme } from './ThemeContext'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Privacy from './components/Privacy'
 import About from './components/About'
-import { Brain } from 'lucide-react'
+import { Brain, Send } from 'lucide-react'
 
 // Define message type
 interface Message {
@@ -17,7 +17,7 @@ interface Message {
 
 // Define model options
 const MODEL_OPTIONS = [
-  { id: 'auto', name: 'automatic choice of best AI' },
+  { id: 'auto', name: 'auto' },
   { id: 'mistral-medium-3', name: 'mistral-medium-3' },
   { id: 'x-ai/grok-3-mini-beta', name: 'x-ai/grok-3-mini-beta' }
 ];
@@ -114,6 +114,10 @@ function App() {
               <stop offset="0%" stopColor="#6366f1" />
               <stop offset="100%" stopColor="#8b5cf6" />
             </linearGradient>
+            <linearGradient id="send-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="100%" stopColor="#8b5cf6" />
+            </linearGradient>
           </defs>
         </svg>
 
@@ -140,10 +144,18 @@ function App() {
                     onKeyDown={handleKeyDown}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    placeholder=""
+                    placeholder={isFocused ? "" : "Ask Artificial Intelligence"}
                     className="search-input"
                     rows={1}
                   />
+                  <button 
+                    className={`send-button ${inputValue.trim() ? 'active' : ''}`}
+                    onClick={handleSubmit}
+                    type="submit"
+                    aria-label="Send message"
+                  >
+                    <Send size={16} className="send-icon" />
+                  </button>
                 </div>
                 
                 <div className="model-selector-container" ref={dropdownRef}>
@@ -177,6 +189,10 @@ function App() {
         
         <footer className="footer">
           <div className="footer-links">
+            <a href="https://gmsoftwares.com" target="_blank" rel="noopener noreferrer" className="footer-link gm-link">
+              G.M.Softwares
+            </a>
+            <span className="footer-divider">|</span>
             <button onClick={toggleTheme} className="footer-link">
               {theme === 'light' ? 'Dark mode' : 'Light mode'}
             </button>

@@ -25,9 +25,9 @@
 /* Dark theme */
 [data-theme="dark"] {
   --text-color: #e5e7eb;
-  --bg-color: #111827;
+  --bg-color: #000000;
   --secondary-bg: #1f2937;
-  --pill-bg-color: rgba(125, 125, 125, 0.05);
+  --pill-bg-color: #070707;
   --link-color: #60a5fa;
   --link-hover-color: #93c5fd;
   --button-bg: #1f2937;
