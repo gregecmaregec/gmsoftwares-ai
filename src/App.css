@@ -86,6 +86,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
 }
 
 .search-input-wrapper {
@@ -267,23 +268,24 @@ h1 {
 }
 
 .model-selector-container {
-  align-self: flex-start;
+  position: absolute;
+  right: 12px;
+  top: 100%;
   margin-top: 8px;
-  position: relative;
   user-select: none;
-  padding-left: 22px;
+  z-index: 5;
 }
 
 .model-selector-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: 4px;
   color: var(--text-color);
   font-size: 0.65rem;
   opacity: 0.4;
   cursor: pointer;
-  padding: 6px 12px 6px 0;
+  padding: 6px 0;
   border-radius: 16px;
   transition: all 0.2s ease;
 }
@@ -334,9 +336,11 @@ h1 {
 
 .model-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  top: 100%;
+  margin-top: 4px;
+  right: 0;
+  left: auto;
+  transform: translateY(10px);
   background-color: var(--bg-color);
   min-width: 180px;
   border-radius: 10px;
@@ -350,7 +354,7 @@ h1 {
 
 .model-dropdown.open {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: all;
 }
 

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import './App.css'
-import { ThemeToggle } from './components/ThemeToggle'
 import { useTheme } from './ThemeContext'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Privacy from './components/Privacy'
@@ -189,13 +188,13 @@ function App() {
         
         <footer className="footer">
           <div className="footer-links">
-            <a href="https://gmsoftwares.com" target="_blank" rel="noopener noreferrer" className="footer-link gm-link">
-              G.M.Softwares
-            </a>
-            <span className="footer-divider">|</span>
             <button onClick={toggleTheme} className="footer-link">
               {theme === 'light' ? 'Dark mode' : 'Light mode'}
             </button>
+            <span className="footer-divider">|</span>
+            <a href="https://gmsoftwares.com" target="_blank" rel="noopener noreferrer" className="footer-link gm-link">
+              G.M.Softwares
+            </a>
             <span className="footer-divider">|</span>
             <Link to="/about" className="footer-link">About</Link>
             <span className="footer-divider">|</span>
