@@ -603,13 +603,11 @@ h1 {
   }
 }
 
-/* On mobile, position below search input and make full width */
+/* On mobile, position below search input */
 @media (max-width: 767px) {
   .cookie-disclaimer {
     top: calc(100% + 10px);
     left: 0;
-    width: 100%;
-    max-width: 100%;
   }
 }
 
