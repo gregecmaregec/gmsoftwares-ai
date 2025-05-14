@@ -313,7 +313,7 @@ h1 {
 .brain-icon {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .model-arrow {
@@ -583,7 +583,7 @@ h1 {
   padding: 10px 16px;
   border-radius: 8px;
   font-size: 0.75rem;
-  width: 50%;
+  width: 64%;
   max-width: 300px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
