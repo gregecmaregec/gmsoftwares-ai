@@ -229,24 +229,24 @@ h1 {
 
 .search-input::placeholder {
   text-align: left;
-  opacity: 0.75;
+  opacity: 0.96;
   font-size: 0.9rem;
   color: var(--text-color);
 }
 
 /* Make sure the placeholder has consistent styling across browsers */
 .search-input::-webkit-input-placeholder {
-  opacity: 0.75;
+  opacity: 1;
   color: var(--text-color);
 }
 
 .search-input::-moz-placeholder {
-  opacity: 0.75;
+  opacity: 1;
   color: var(--text-color);
 }
 
 .search-input:-ms-input-placeholder {
-  opacity: 0.75;
+  opacity: 1;
   color: var(--text-color);
 }
 
@@ -283,7 +283,7 @@ h1 {
   gap: 4px;
   color: var(--text-color);
   font-size: 0.65rem;
-  opacity: 0.4;
+  opacity: 1;
   cursor: pointer;
   padding: 6px 0;
   border-radius: 16px;
@@ -291,12 +291,12 @@ h1 {
 }
 
 .model-selector-header:hover {
-  opacity: 0.6;
+  opacity: 0.9;
   background-color: rgba(125, 125, 125, 0.05);
 }
 
 .model-selector-header.active {
-  opacity: 0.7;
+  opacity: 1;
   background-color: rgba(125, 125, 125, 0.08);
 }
 
@@ -306,14 +306,14 @@ h1 {
   align-items: center;
   gap: 4px;
   color: var(--text-color);
-  opacity: 0.9;
+  opacity: 0.7;
   font-weight: 300;
 }
 
 .brain-icon {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
-  opacity: 0.95;
+  opacity: 1;
 }
 
 .model-arrow {
@@ -574,4 +574,75 @@ h1 {
 .gm-link {
   font-family: 'Tiro Kannada', serif;
   letter-spacing: 0.02em;
+}
+
+/* Cookie Disclaimer Styles */
+.cookie-disclaimer {
+  background-color: var(--pill-bg-color);
+  color: var(--text-color);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  width: 50%;
+  max-width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 100;
+  opacity: 1;
+  position: absolute;
+}
+
+/* On desktop, position to the left of search input */
+@media (min-width: 768px) {
+  .cookie-disclaimer {
+    top: 0;
+    left: -320px;
+    width: 300px;
+  }
+}
+
+/* On mobile, position below search input */
+@media (max-width: 767px) {
+  .cookie-disclaimer {
+    top: calc(100% + 10px);
+    left: 0;
+  }
+}
+
+.cookie-disclaimer.hidden {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+.cookie-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.cookie-link {
+  color: rgba(99, 102, 241, 0.8);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.cookie-link:hover {
+  color: rgba(139, 92, 246, 0.9);
+  text-decoration: underline;
+}
+
+.cookie-accept {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.7), rgba(139, 92, 246, 0.7));
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translate(0, 0); }
+  to { opacity: 0; transform: translate(0, 20px); }
 }

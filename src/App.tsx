@@ -14,6 +14,45 @@ interface Message {
   timestamp: Date;
 }
 
+// Cookie Disclaimer Component
+const CookieDisclaimer = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
+  
+  useEffect(() => {
+    // Check if user has already accepted cookies
+    const hasAccepted = localStorage.getItem('cookiesAccepted') === 'true';
+    if (!hasAccepted) {
+      setIsVisible(true);
+    }
+  }, []);
+  
+  const handleAccept = () => {
+    setIsHiding(true);
+    // Wait for animation to complete before removing from DOM
+    setTimeout(() => {
+      setIsVisible(false);
+      // Save to localStorage
+      localStorage.setItem('cookiesAccepted', 'true');
+    }, 300);
+  };
+  
+  if (!isVisible) return null;
+  
+  return (
+    <div className={`cookie-disclaimer ${isHiding ? 'hidden' : ''}`}>
+      <div className="cookie-text">
+        This site uses cookies to enhance your experience.
+        <br />
+        <Link to="/privacy" className="cookie-link">See privacy policy</Link>
+      </div>
+      <button className="cookie-accept" onClick={handleAccept}>
+        Accept
+      </button>
+    </div>
+  );
+};
+
 // Define model options
 const MODEL_OPTIONS = [
   { id: 'auto', name: 'auto' },
@@ -157,6 +196,9 @@ function App() {
                   </button>
                 </div>
                 
+                {/* Cookie Disclaimer */}
+                <CookieDisclaimer />
+                
                 <div className="model-selector-container" ref={dropdownRef}>
                   <div 
                     className={`model-selector-header ${isDropdownOpen ? 'active' : ''}`}
@@ -188,13 +230,13 @@ function App() {
         
         <footer className="footer">
           <div className="footer-links">
-            <button onClick={toggleTheme} className="footer-link">
-              {theme === 'light' ? 'Dark mode' : 'Light mode'}
-            </button>
-            <span className="footer-divider">|</span>
             <a href="https://gmsoftwares.com" target="_blank" rel="noopener noreferrer" className="footer-link gm-link">
               G.M.Softwares
             </a>
+            <span className="footer-divider">|</span>
+            <button onClick={toggleTheme} className="footer-link">
+              {theme === 'light' ? 'Dark mode' : 'Light mode'}
+            </button>
             <span className="footer-divider">|</span>
             <Link to="/about" className="footer-link">About</Link>
             <span className="footer-divider">|</span>
