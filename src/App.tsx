@@ -47,29 +47,68 @@ const CookieDisclaimer = () => {
         <Link to="/privacy" className="cookie-link">See privacy policy</Link>
       </div>
       <button className="cookie-accept" onClick={handleAccept}>
-        Accept
+        <span>Accept</span>
       </button>
     </div>
   );
 };
 
-// Define model options
-const MODEL_OPTIONS = [
-  { id: 'auto', name: 'auto' },
-  { id: 'mistral-medium-3', name: 'mistral-medium-3' },
-  { id: 'x-ai/grok-3-mini-beta', name: 'x-ai/grok-3-mini-beta' }
+// Comprehensive model list with many options
+const ALL_MODEL_OPTIONS = [
+  { id: 'auto', name: 'Auto' },
+  { id: 'amazon/nova-lite-v1', name: 'Nova Lite V1', provider: 'Amazon' },
+  { id: 'anthropic/claude-3.5-haiku-20241022:beta', name: 'Claude 3.5 Haiku 20241022 (Beta)', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.7-sonnet:beta', name: 'Claude 3.7 Sonnet (Beta)', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
+  { id: 'cohere/command-r-plus-08-2024', name: 'Command R Plus 08 2024', provider: 'Cohere' },
+  { id: 'cohere/command-r7b-12-2024', name: 'Command R7B 12 2024', provider: 'Cohere' },
+  { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
+  { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', provider: 'DeepSeek' },
+  { id: 'google/gemini-2.0-flash-001', name: 'Gemini 2.0 Flash 001', provider: 'Google' },
+  { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash Preview', provider: 'Google' },
+  { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
+  { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
+  { id: 'meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B Instruct', provider: 'Meta-Llama' },
+  { id: 'meta-llama/llama-4-maverick', name: 'Llama 4 Maverick', provider: 'Meta-Llama' },
+  { id: 'meta-llama/llama-4-scout', name: 'Llama 4 Scout', provider: 'Meta-Llama' },
+  { id: 'microsoft/phi-4', name: 'Phi-4', provider: 'Microsoft' },
+  { id: 'mistral/ministral-8b', name: 'Ministral 8B', provider: 'Mistral' },
+  { id: 'mistralai/mistral-large-2407', name: 'Mistral Large 2407', provider: 'MistralAI' },
+  { id: 'mistralai/mistral-medium-3', name: 'Mistral Medium 3', provider: 'MistralAI' },
+  { id: 'nousresearch/hermes-3-llama-3.1-70b', name: 'Hermes 3 Llama 3.1 70B', provider: 'NousResearch' },
+  { id: 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free', name: 'Llama 3.1 Nemotron Ultra 253B V1 (Free)', provider: 'Nvidia' },
+  { id: 'openai/gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'OpenAI' },
+  { id: 'openai/gpt-4.1', name: 'GPT-4.1', provider: 'OpenAI' },
+  { id: 'openai/gpt-4.1-mini', name: 'GPT-4.1 Mini', provider: 'OpenAI' },
+  { id: 'openai/gpt-4.1-nano', name: 'GPT-4.1 Nano', provider: 'OpenAI' },
+  { id: 'openai/gpt-4o', name: 'GPT-4o', provider: 'OpenAI' },
+  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI' },
+  { id: 'openai/o3-mini', name: 'O3 Mini', provider: 'OpenAI' },
+  { id: 'openai/o4-mini', name: 'O4 Mini', provider: 'OpenAI' },
+  { id: 'openai/o4-mini-high', name: 'O4 Mini High', provider: 'OpenAI' },
+  { id: 'qwen/qwen-2.5-7b-instruct', name: 'Qwen 2.5 7B Instruct', provider: 'Qwen' },
+  { id: 'x-ai/grok-3-beta', name: 'Grok 3 Beta', provider: 'xAI' },
+  { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini Beta', provider: 'xAI' },
 ];
 
 function App() {
   const [inputValue, setInputValue] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
-  const [selectedModel, setSelectedModel] = useState('auto')
+  const [selectedModel, setSelectedModel] = useState(ALL_MODEL_OPTIONS[0].id) // Default to auto
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [modelSearchTerm, setModelSearchTerm] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { theme, toggleTheme } = useTheme()
+
+  // Filtered model options based on search
+  const filteredModelOptions = ALL_MODEL_OPTIONS.filter(model =>
+    model.name.toLowerCase().includes(modelSearchTerm.toLowerCase()) ||
+    (model.provider && model.provider.toLowerCase().includes(modelSearchTerm.toLowerCase()))
+  );
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -89,6 +128,7 @@ function App() {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false)
+        setModelSearchTerm(''); // Clear search on close
       }
     }
     
@@ -129,7 +169,7 @@ function App() {
     setTimeout(() => {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: `This is a simulated response to: "${newMessage.content}" using ${selectedModel} model.`,
+        content: `This is a simulated response to: "${newMessage.content}" using ${ALL_MODEL_OPTIONS.find(m => m.id === selectedModel)?.name || 'the selected'} model.`,
         sender: 'ai',
         timestamp: new Date()
       }
@@ -140,6 +180,7 @@ function App() {
   const selectModelOption = (modelId: string) => {
     setSelectedModel(modelId)
     setIsDropdownOpen(false)
+    setModelSearchTerm(''); // Clear search on select
   }
 
   return (
@@ -182,7 +223,11 @@ function App() {
                     onKeyDown={handleKeyDown}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    placeholder={isFocused ? "" : "Ask Artificial Intelligence"}
+                    placeholder={
+                      isFocused ? "" : 
+                      selectedModel === 'auto' ? "Ask Artificial Intelligence" :
+                      `Ask ${ALL_MODEL_OPTIONS.find(m => m.id === selectedModel)?.name || 'Selected Model'}`
+                    }
                     className="search-input"
                     rows={1}
                   />
@@ -206,21 +251,37 @@ function App() {
                   >
                     <span className="selected-model">
                       {selectedModel === 'auto' && <Brain size={14} className="brain-icon" />}
-                      {MODEL_OPTIONS.find(model => model.id === selectedModel)?.name}
+                      {selectedModel === 'auto' ? ALL_MODEL_OPTIONS.find(model => model.id === selectedModel)?.name : 'manual'}
                     </span>
                     <span className="model-arrow"></span>
                   </div>
                   
                   <div className={`model-dropdown ${isDropdownOpen ? 'open' : ''}`}>
-                    {MODEL_OPTIONS.map(model => (
-                      <div 
-                        key={model.id}
-                        className={`model-option ${selectedModel === model.id ? 'selected' : ''}`}
-                        onClick={() => selectModelOption(model.id)}
-                      >
-                        {model.name}
-                      </div>
-                    ))}
+                    <div className="model-search-input-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        className="model-search-input"
+                        value={modelSearchTerm}
+                        onChange={(e) => setModelSearchTerm(e.target.value)}
+                        onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+                      />
+                    </div>
+                    <div className="model-options-list">
+                      {filteredModelOptions.map(model => (
+                        <div
+                          key={model.id}
+                          className={`model-option ${selectedModel === model.id ? 'selected' : ''}`}
+                          onClick={() => selectModelOption(model.id)}
+                        >
+                          <div className="model-option-name">{model.name}</div>
+                          {model.provider && <div className="model-option-provider">{model.provider}</div>}
+                        </div>
+                      ))}
+                      {filteredModelOptions.length === 0 && (
+                        <div className="model-option-empty">No AI found.</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </form>

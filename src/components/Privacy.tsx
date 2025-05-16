@@ -6,7 +6,7 @@ const Privacy: React.FC = () => {
     <div className="privacy-container">
       <h1>Privacy Policy</h1>
       <p>This is a simple privacy policy page for the gmsoftwares.ai application.</p>
-      <p>We respect your privacy and are committed to protecting your personal data.</p>
+      <p>I built this application myself, its mostly an openrouter wrapper. Your prompts are sent to my server I set up in my dorm room, classified with a large language model that spins my local rtx 3070ti, and then onward to OpenRouter.</p>
       
       <div className="privacy-section">
         <h2>Information We Collect</h2>
