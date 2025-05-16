@@ -56,8 +56,8 @@ const CookieDisclaimer = () => {
 // Comprehensive model list with many options
 const ALL_MODEL_OPTIONS = [
   // top of the line
-  { id: 'auto', name: 'auto' },
-  { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini Beta', provider: 'xAI' },
+  { id: 'auto', name: 'auto'},
+  { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini β', provider: 'xAI' },
   { id: 'openai/o4-mini-high', name: 'GPT-o4 Mini High', provider: 'OpenAI' },
   { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
   { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
@@ -67,9 +67,9 @@ const ALL_MODEL_OPTIONS = [
   { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
   // the rest
   { id: 'amazon/nova-lite-v1', name: 'Nova Lite V1', provider: 'Amazon' },
-  { id: 'anthropic/claude-3.5-haiku-20241022:beta', name: 'Claude 3.5 Haiku 20241022 (Beta)', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.5-haiku-20241022:beta', name: 'Claude 3.5 Haiku 20241022 β', provider: 'Anthropic' },
   { id: 'anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'Anthropic' },
-  { id: 'anthropic/claude-3.7-sonnet:beta', name: 'Claude 3.7 Sonnet (Beta)', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.7-sonnet:beta', name: 'Claude 3.7 Sonnet β', provider: 'Anthropic' },
   { id: 'cohere/command-r-plus-08-2024', name: 'Command R Plus 08 2024', provider: 'Cohere' },
   { id: 'cohere/command-r7b-12-2024', name: 'Command R7B 12 2024', provider: 'Cohere' },
   { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', provider: 'DeepSeek' },
@@ -91,7 +91,7 @@ const ALL_MODEL_OPTIONS = [
   { id: 'openai/o3-mini', name: 'O3 Mini', provider: 'OpenAI' },
   { id: 'openai/o4-mini', name: 'O4 Mini', provider: 'OpenAI' },
   { id: 'qwen/qwen-2.5-7b-instruct', name: 'Qwen 2.5 7B Instruct', provider: 'Qwen' },
-  { id: 'x-ai/grok-3-beta', name: 'Grok 3 Beta', provider: 'xAI' }
+  { id: 'x-ai/grok-3-beta', name: 'Grok 3 β', provider: 'xAI' }
 ];
 
 // Define the set of top-tier model IDs
