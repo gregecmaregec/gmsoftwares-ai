@@ -722,3 +722,9 @@ h1 {
   from { opacity: 1; transform: translate(0, 0); }
   to { opacity: 0; transform: translate(0, 20px); }
 }
+
+.model-divider {
+  height: 1px;
+  background-color: #e0e0e0; /* A light grey color */
+  margin: 8px 12px;      /* Vertical margin of 8px, horizontal margin of 12px */
+}
