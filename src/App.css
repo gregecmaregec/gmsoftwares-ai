@@ -348,7 +348,7 @@ h1 {
   right: 0;
   left: auto;
   transform: translateY(10px);
-  background-color: var(--bg-color);
+  background-color: var(--bg-color) !important;
   width: 280px; /* Increased width to better accommodate search and longer names */
   max-height: 40vh; /* Limit max height */
   border-radius: 10px;
@@ -401,8 +401,30 @@ h1 {
 }
 
 .model-options-list::-webkit-scrollbar-thumb {
-  background-color: rgba(125, 125, 125, 0.2);
-  border-radius: 3px;
+  background-color: rgba(125,125,125,0.18);
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.model-options-list::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .model-options-list {
+  scrollbar-color: rgba(180,180,200,0.35) var(--bg-color) !important;
+}
+[data-theme="dark"] .model-options-list::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+[data-theme="dark"] .model-options-list::-webkit-scrollbar-thumb {
+  background-color: rgba(180,180,200,0.35) !important;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .model-option {
