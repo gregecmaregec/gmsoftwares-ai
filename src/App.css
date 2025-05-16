@@ -310,29 +310,36 @@ h1 {
   font-weight: 300;
 }
 
+[data-theme="dark"] .selected-model {
+  opacity: 0.9; /* Increase opacity for better visibility in dark mode */
+}
+
 .brain-icon {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
   opacity: 0.9;
 }
 
+/*
 .model-arrow {
   position: relative;
   width: 6px;
   height: 6px;
-  transform: rotate(45deg);
+  transform: rotate(-135deg);
   border-right: 1px solid var(--text-color);
   border-bottom: 1px solid var(--text-color);
   transition: transform 0.3s ease;
   opacity: 0.6;
-  margin-bottom: 2px;
-}
-
-.active .model-arrow {
-  transform: rotate(-135deg);
   margin-bottom: 0;
   margin-top: 2px;
 }
+
+.active .model-arrow {
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+  margin-top: 0;
+}
+*/
 
 .model-dropdown {
   position: absolute;
@@ -423,10 +430,18 @@ h1 {
   opacity: 0.85;
 }
 
+[data-theme="dark"] .model-option-name {
+  opacity: 1; /* Full opacity for model names in dark mode */
+}
+
 .model-option-provider {
   font-size: 0.65rem;
   opacity: 0.5;
   font-weight: 300;
+}
+
+[data-theme="dark"] .model-option-provider {
+  opacity: 0.75; /* Increase opacity for provider names in dark mode */
 }
 
 .model-option.selected {

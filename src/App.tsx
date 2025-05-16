@@ -56,7 +56,7 @@ const CookieDisclaimer = () => {
 // Comprehensive model list with many options
 const ALL_MODEL_OPTIONS = [
   // top of the line
-  { id: 'auto', name: 'Auto' },
+  { id: 'auto', name: 'auto' },
   { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini Beta', provider: 'xAI' },
   { id: 'openai/o4-mini-high', name: 'GPT-o4 Mini High', provider: 'OpenAI' },
   { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
@@ -268,7 +268,6 @@ function App() {
                       {selectedModel === 'auto' && <Brain size={14} className="brain-icon" />}
                       {selectedModel === 'auto' ? ALL_MODEL_OPTIONS.find(model => model.id === selectedModel)?.name : 'manual'}
                     </span>
-                    <span className="model-arrow"></span>
                   </div>
                   
                   <div className={`model-dropdown ${isDropdownOpen ? 'open' : ''}`}>

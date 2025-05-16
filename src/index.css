@@ -34,7 +34,7 @@ html.loaded, html.loaded body {
 
 /* Dark theme */
 [data-theme="dark"] {
-  --text-color: #e5e7eb;
+  --text-color: #f0f0f0;
   --bg-color: #000000;
   --secondary-bg: #1f2937;
   --pill-bg-color: #0e0e0e;
@@ -91,7 +91,7 @@ button:focus {
 * {
   box-sizing: border-box;
 }
-
+/*
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -104,3 +104,4 @@ button:focus {
     background-color: #f9f9f9;
   }
 }
+*/
