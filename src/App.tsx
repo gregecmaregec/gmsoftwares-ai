@@ -59,6 +59,7 @@ const ALL_MODEL_OPTIONS = [
   { id: 'auto', name: 'auto'},
   { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini β', provider: 'xAI' },
   { id: 'openai/o4-mini-high', name: 'GPT-o4 Mini High', provider: 'OpenAI' },
+  { id: 'openai/codex-mini', name: 'OpenAI Codex Mini', provider: 'OpenAI' },
   { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
   { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
   { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash Preview', provider: 'Google' },
@@ -104,7 +105,8 @@ const TOP_TIER_MODEL_IDS = new Set([
   'google/gemini-2.5-flash-preview',
   'openai/gpt-4.1',
   'openai/gpt-4.5',
-  'deepseek/deepseek-chat-v3-0324'
+  'deepseek/deepseek-chat-v3-0324',
+  'openai/codex-mini'
 ]);
 
 function App() {
@@ -163,34 +165,140 @@ function App() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputValue.trim()) return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const currentInput = inputValue.trim();
+    if (!currentInput) return;
 
-    // Add user message
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: currentInput,
       sender: 'user',
-      timestamp: new Date()
+      timestamp: new Date(),
+    };
+
+    const messagesForApi = [
+      ...messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.content,
+      })),
+      { role: 'user', content: currentInput } 
+    ];
+
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiPlaceholderMessage: Message = {
+      id: aiMessageId,
+      content: '', 
+      sender: 'ai',
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, userMessage, aiPlaceholderMessage]);
+
+    setInputValue('');
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
     }
-    
-    setMessages(prev => [...prev, newMessage])
-    
-    // Clear input
-    setInputValue('')
-    
-    // Simulate AI response (would connect to API in production)
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `This is a simulated response to: "${newMessage.content}" using ${ALL_MODEL_OPTIONS.find(m => m.id === selectedModel)?.name || 'the selected'} model.`,
-        sender: 'ai',
-        timestamp: new Date()
+
+    try {
+      const response = await fetch('https://ai-api.gmsoftwares.com/api/chat', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'ljubimte',
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream',
+        },
+        body: JSON.stringify({
+          model: selectedModel,
+          stream: true,
+          messages: messagesForApi,
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        const errorText = response.body ? await response.text() : `HTTP error! status: ${response.status}`;
+        setMessages(prev => prev.map(msg =>
+          msg.id === aiMessageId ? { ...msg, content: `Error: ${errorText}` } : msg
+        ));
+        return;
       }
-      setMessages(prev => [...prev, aiResponse])
-    }, 1000)
-  }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let streamBuffer = ''; 
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        streamBuffer += decoder.decode(value, { stream: true });
+        let eolIndex;
+
+        while ((eolIndex = streamBuffer.indexOf('\n')) >= 0) {
+          const line = streamBuffer.substring(0, eolIndex).trim();
+          streamBuffer = streamBuffer.substring(eolIndex + 1);
+
+          if (line.startsWith('data: ')) {
+            const jsonData = line.substring(5).trim();
+            if (jsonData === '[DONE]') {
+              continue;
+            }
+            if (jsonData) {
+              try {
+                const chunk = JSON.parse(jsonData);
+                if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
+                  const deltaContent = chunk.choices[0].delta.content;
+                  if (deltaContent) {
+                    setMessages(prev =>
+                      prev.map(msg =>
+                        msg.id === aiMessageId
+                          ? { ...msg, content: msg.content + deltaContent }
+                          : msg
+                      )
+                    );
+                  }
+                }
+                if (chunk.usage) {
+                  console.log('API Usage:', chunk.usage);
+                }
+              } catch (parseError) {
+                console.error('Error parsing stream data:', parseError, 'Data:', jsonData);
+              }
+            }
+          }
+        }
+      }
+      // Process any remaining data in streamBuffer if the stream ended without a final newline
+      if (streamBuffer.startsWith('data: ')) {
+        const jsonData = streamBuffer.substring(5).trim();
+        if (jsonData && jsonData !== '[DONE]') {
+            try {
+                const chunk = JSON.parse(jsonData);
+                if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
+                    const deltaContent = chunk.choices[0].delta.content;
+                    if (deltaContent) {
+                        setMessages(prev =>
+                            prev.map(msg =>
+                                msg.id === aiMessageId
+                                ? { ...msg, content: msg.content + deltaContent }
+                                : msg
+                            )
+                        );
+                    }
+                }
+            } catch(e) {
+                console.error("Error parsing final accumulated data:", e, "Data:", jsonData);
+            }
+        }
+      }
+
+    } catch (error) {
+      console.error('Failed to send message or process stream:', error);
+      setMessages(prev => prev.map(msg =>
+        msg.id === aiMessageId ? { ...msg, content: `Error: ${error instanceof Error ? error.message : String(error)}` } : msg
+      ));
+    }
+  };
   
   const selectModelOption = (modelId: string) => {
     setSelectedModel(modelId)
