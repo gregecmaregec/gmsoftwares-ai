@@ -65,7 +65,7 @@ const ALL_MODEL_OPTIONS = [
   { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
   { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash Preview', provider: 'Google' },
   { id: 'openai/gpt-4.1', name: 'GPT-4.1', provider: 'OpenAI' },
-  { id: 'openai/gpt-4.5', name: 'GPT-4.5', provider: 'OpenAI' },
+  { id: 'openai/gpt-4.5-preview', name: 'GPT-4.5 Preview', provider: 'OpenAI' },
   { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
   // the rest
   { id: 'amazon/nova-lite-v1', name: 'Nova Lite V1', provider: 'Amazon' },
@@ -105,7 +105,7 @@ const TOP_TIER_MODEL_IDS = new Set([
   'google/gemini-2.5-pro-preview',
   'google/gemini-2.5-flash-preview',
   'openai/gpt-4.1',
-  'openai/gpt-4.5',
+  'openai/gpt-4.5-preview',
   'deepseek/deepseek-chat-v3-0324',
   'openai/codex-mini'
 ]);
