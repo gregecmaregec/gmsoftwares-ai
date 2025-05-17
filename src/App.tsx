@@ -178,12 +178,16 @@ function App() {
       timestamp: new Date(),
     };
 
+    // Limit the history sent to the API to improve performance for the first token
+    const HISTORY_SIZE_LIMIT = 20; // Keep the last 20 messages
+    const recentMessages = messages.slice(-HISTORY_SIZE_LIMIT);
+
     const messagesForApi = [
-      ...messages.map(msg => ({
+      ...recentMessages.map(msg => ({ // Changed from 'messages' to 'recentMessages'
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.content,
       })),
-      { role: 'user', content: currentInput } 
+      { role: 'user', content: currentInput }
     ];
 
     const aiMessageId = (Date.now() + 1).toString();
