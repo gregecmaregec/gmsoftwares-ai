@@ -12,6 +12,7 @@ interface Message {
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  model?: string; // Stores actual model from API or 'classifying' or pre-selected model
 }
 
 // Cookie Disclaimer Component
@@ -114,6 +115,7 @@ function App() {
   const [isFocused, setIsFocused] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [selectedModel, setSelectedModel] = useState(ALL_MODEL_OPTIONS[0].id) // Default to auto
+  const [respondingModel, setRespondingModel] = useState<string | undefined>(undefined); // To store the model name from API response
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [modelSearchTerm, setModelSearchTerm] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -186,11 +188,19 @@ function App() {
     ];
 
     const aiMessageId = (Date.now() + 1).toString();
+    let initialAiModel: string | undefined = undefined;
+    if (selectedModel === 'auto') {
+      initialAiModel = 'classifying'; // Special status for auto mode
+    } else if (selectedModel && ALL_MODEL_OPTIONS.find(m => m.id === selectedModel)) {
+      initialAiModel = selectedModel; // Pre-set model if manually chosen
+    }
+
     const aiPlaceholderMessage: Message = {
       id: aiMessageId,
       content: '', 
       sender: 'ai',
       timestamp: new Date(),
+      model: initialAiModel,
     };
     setMessages(prev => [...prev, userMessage, aiPlaceholderMessage]);
 
@@ -225,6 +235,7 @@ function App() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let streamBuffer = ''; 
+      let currentAiMessageModel: string | undefined = undefined;
 
       // eslint-disable-next-line no-constant-condition
       while (true) {
@@ -246,13 +257,21 @@ function App() {
             if (jsonData) {
               try {
                 const chunk = JSON.parse(jsonData);
+                if (chunk.model && !currentAiMessageModel) {
+                  currentAiMessageModel = chunk.model;
+                  setMessages(prev =>
+                    prev.map(msg =>
+                      msg.id === aiMessageId ? { ...msg, model: currentAiMessageModel } : msg
+                    )
+                  );
+                }
                 if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
                   const deltaContent = chunk.choices[0].delta.content;
                   if (deltaContent) {
                     setMessages(prev =>
                       prev.map(msg =>
                         msg.id === aiMessageId
-                          ? { ...msg, content: msg.content + deltaContent }
+                          ? { ...msg, content: msg.content + deltaContent, model: msg.model || currentAiMessageModel }
                           : msg
                       )
                     );
@@ -260,6 +279,9 @@ function App() {
                 }
                 if (chunk.usage) {
                   console.log('API Usage:', chunk.usage);
+                }
+                if (chunk.model && !currentAiMessageModel) { // Check again for safety, though less likely here
+                  currentAiMessageModel = chunk.model;
                 }
               } catch (parseError) {
                 console.error('Error parsing stream data:', parseError, 'Data:', jsonData);
@@ -274,13 +296,16 @@ function App() {
         if (jsonData && jsonData !== '[DONE]') {
             try {
                 const chunk = JSON.parse(jsonData);
+                if (chunk.model && !currentAiMessageModel) {
+                    currentAiMessageModel = chunk.model;
+                }
                 if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
                     const deltaContent = chunk.choices[0].delta.content;
                     if (deltaContent) {
                         setMessages(prev =>
                             prev.map(msg =>
                                 msg.id === aiMessageId
-                                ? { ...msg, content: msg.content + deltaContent }
+                                ? { ...msg, content: msg.content + deltaContent, model: msg.model || currentAiMessageModel }
                                 : msg
                             )
                         );
@@ -330,8 +355,32 @@ function App() {
             <div className="content-container">
               <div className="conversation-container">
                 {messages.map(message => (
-                  <div key={message.id} className={`message ${message.sender}`}>
-                    <div className="message-content">{message.content}</div>
+                  <div key={message.id} className={`message-entry ${message.sender}`}>
+                    {(message.sender === 'ai' && message.model) && (
+                      <div className={`message-metadata model-name-container ${message.model === 'classifying' ? '' : 'model-name-highlight'}`}>
+                        {message.model === 'classifying' ? (
+                          <span className="classifying-indicator">classifying<span className="dots"><span>.</span><span>.</span><span>.</span></span></span>
+                        ) : (
+                          ALL_MODEL_OPTIONS.find(m => m.id === message.model)?.name || message.model
+                        )}
+                      </div>
+                    )}
+                    <div className={`message ${message.sender}`}>
+                      <div className="message-content">
+                        {message.sender === 'ai' && message.content === '' ? (
+                          <div className="loading-dots-container">
+                            <span className="loading-dot"></span>
+                            <span className="loading-dot"></span>
+                            <span className="loading-dot"></span>
+                          </div>
+                        ) : (
+                          message.content
+                        )}
+                      </div>
+                    </div>
+                    <div className="message-metadata message-timestamp">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
                 ))}
                 <div ref={messagesEndRef} />

@@ -145,7 +145,7 @@ func main() {
 // handler is the main HTTP request handler
 func handler(w http.ResponseWriter, r *http.Request) {
 	// CORS Headers - Adjust origin as necessary for your frontend dev server
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173") // Or "http://localhost:3000", etc.
+	w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com") // Or "http://localhost:3000", etc.
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 

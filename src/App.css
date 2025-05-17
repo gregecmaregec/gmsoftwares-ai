@@ -43,7 +43,7 @@ h1 {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   margin-bottom: 20px;
   scrollbar-width: thin;
 }
@@ -57,6 +57,113 @@ h1 {
   border-radius: 3px;
 }
 
+.message-entry {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.message-entry.user {
+  align-items: flex-end;
+}
+
+.message-entry.ai {
+  align-items: flex-start;
+}
+
+.message-metadata {
+  font-size: 0.7em;
+  opacity: 0.7;
+  padding: 0 8px;
+}
+
+.model-name-container {
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.model-name-highlight {
+  color: #be00be;
+}
+
+.message-timestamp {
+  margin-top: 3px;
+}
+
+.message-entry.user .message-metadata {
+  text-align: right;
+}
+
+.message-entry.ai .message-metadata {
+  text-align: left;
+}
+
+.classifying-indicator {
+  font-style: italic;
+  font-weight: normal;
+}
+
+.classifying-indicator .dots span {
+  opacity: 0;
+  animation: blink 1.4s infinite;
+}
+
+.classifying-indicator .dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.classifying-indicator .dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.classifying-indicator .dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Loading dots animation for AI placeholder */
+.loading-dots-container {
+  display: flex;
+  align-items: center; /* Aligns dots vertically in the center of the line if needed */
+  justify-content: flex-start; /* Aligns dots to the start of the bubble */
+  padding: 6px 0; /* Add some padding to match typical line height */
+  height: 1.5em; /* Give it a defined height similar to text line-height */
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  background-color: currentColor; /* Use the text color of the AI bubble */
+  border-radius: 50%;
+  margin: 0 2px; /* Spacing between dots */
+  animation: bounce-dot 1.4s infinite ease-in-out;
+  opacity: 0.7;
+}
+
+/* Stagger the animation for each dot */
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounce-dot {
+  0%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px); /* How high the dots bounce */
+  }
+}
+
 .message {
   max-width: 85%;
   padding: 10px 16px;
@@ -64,6 +171,8 @@ h1 {
   font-size: 0.9rem;
   line-height: 1.5;
   animation: fadeIn 0.3s ease-in;
+  margin-bottom: 4px;
+  font-weight: bold;
 }
 
 .message.user {
@@ -764,4 +873,27 @@ h1 {
   height: 1px;
   background-color: #e0e0e0; /* A light grey color */
   margin: 8px 12px;      /* Vertical margin of 8px, horizontal margin of 12px */
+}
+
+.message-timestamp {
+  font-size: 0.7em;
+  color: var(--text-color-secondary);
+}
+
+/* Adjust message content padding if timestamp is present */
+.message.user .message-content {
+  /* Add any specific styling if needed, otherwise rely on general .message-content */
+}
+
+.message.ai .message-content {
+  /* Add any specific styling if needed, otherwise rely on general .message-content */
+}
+
+/* Ensure user messages align timestamp to the right as well */
+.message.user .message-timestamp {
+  text-align: right;
+}
+
+.message.ai .message-timestamp {
+  text-align: right;
 }
