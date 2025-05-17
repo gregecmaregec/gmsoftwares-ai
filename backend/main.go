@@ -21,8 +21,23 @@ const (
 	ollamaURL               = "http://localhost:11434/api/generate"
 	openrouterURL           = "https://openrouter.ai/api/v1/chat/completions"
 	classificationModel     = "gemma3:4b" // Using gemma3:4b for classification
-	classificationSystemMsg = "You are a helpful assistant for classification tasks."
+	classificationSystemMsg = "You are an AI assistant that classifies user prompts into one of the following categories by responding with ONLY the category number:
+
+  Classifications:
+  1 - Research & Knowledge (Finding information, summarizing data, answering factual questions)
+  2 - Complex Problem Solving & Strategy (Organization, time management, project planning, decision-making)
+  3 - Writing & Communication (Text refinement, proofreading, style adjustment, clarity improvement)
+  4 - Explanation & Instruction (Breaking down complex topics, teaching concepts, how-to guides)
+  5 - Content Generation (Creating structured content like lists, tables, or formatted information)
+  6 - Emotional Intelligence & Support (Advice, motivation, emotional processing, wellness)
+  7 - Advanced Reasoning, Coding & Technical Tasks (Programming help, debugging, technical explanation, advanced reasoning)
+  8 - Creative & Artistic (Fiction writing, idea generation, artistic concepts, storytelling)
+  9 - Efficient Reasoning & Analysis (Critical thinking, ethical analysis, argument evaluation, logic, cost-effective reasoning)
+
+  Based *only* on the user's request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification."
 )
+
+const (ContextMaxChars = 4000 * 3) // Assuming average 3 chars per token for context window estimation
 
 // classificationMap defines the different model capabilities the backend can handle.
 var classificationMap = map[string]struct {
@@ -34,8 +49,8 @@ var classificationMap = map[string]struct {
 		Model: "perplexity/sonar-pro", // Perplexity models excel at research and knowledge tasks
 	},
 	"2": {
-		Name:  "Planning & Strategy",
-		Model: "openai/gpt-4o-mini", // Good all-around model for planning and structured thinking
+		Name:  "Complex Problem Solving & Strategy",
+		Model: "anthropic/claude-3.7-sonnet:thinking", // Excels at complex reasoning, problem-solving
 	},
 	"3": {
 		Name:  "Writing & Communication",
@@ -54,16 +69,16 @@ var classificationMap = map[string]struct {
 		Model: "anthropic/claude-3.7-sonnet", // Empathetic and conversational model
 	},
 	"7": {
-		Name:  "Code & Technical Assistance",
-		Model: "x-ai/grok-3-mini-beta", // Top-tier model for coding tasks
+		Name:  "Advanced Reasoning, Coding & Technical Tasks",
+		Model: "x-ai/grok-3-mini-beta", // Top-tier model for coding, reasoning, summarization
 	},
 	"8": {
 		Name:  "Creative & Artistic",
 		Model: "openai/gpt-4.5-preview", // Strong creative and instruction-following model
 	},
 	"9": {
-		Name:  "Reasoning & Analysis",
-		Model: "openai/o3-mini-high", // Excellent model for nuanced reasoning tasks
+		Name:  "Efficient Reasoning & Analysis",
+		Model: "openai/o4-mini-high", // Compact, fast, cost-efficient reasoning model
 	},
 }
 
@@ -192,10 +207,35 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fullClassificationName := classificationNumber + "-" + classificationInfo.Name
 	log.Printf("Mapped to: %s (Model: %s)", fullClassificationName, classificationInfo.Model)
 
-	// 7. Handle Special Case: Content Generation (Static JSON Response)
+	// 7. Always stream: Set up SSE response headers
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("X-Accel-Buffering", "no") // For Nginx
+	// Do not call w.WriteHeader(http.StatusOK) yet, allow setting it after metadata or in case of early error
+
+	// Send initial message with classification info
+	initialEvent := ServerSentEvent{
+		Event: "metadata",
+		Data: string(mustJSON(map[string]interface{}{
+			"classification": fullClassificationName,
+			"model":          classificationInfo.Model,
+		})),
+	}
+	// WriteHeader needs to be called before any body is written.
+	// If writeSSE fails here, we can't send a different HTTP status code anymore.
+	// However, for streaming, we typically send 200 OK and then signal errors in the stream.
+	w.WriteHeader(http.StatusOK)
+	if err := writeSSE(w, initialEvent); err != nil {
+		log.Printf("ERROR: Failed to write initial SSE event: %v", err)
+		// Client connection might be already gone, not much we can do here for HTTP status
+		return
+	}
+	w.(http.Flusher).Flush()
+
+	// Handle Special Case: Content Generation (Static JSON Response, now streamed)
 	if classificationNumber == "5" {
-		log.Println("Handling classification '5' (Content Generation) with static JSON.")
-		// Example static response structure
+		log.Println("Handling classification '5' (Content Generation) by streaming static JSON.")
 		staticResponse := map[string]interface{}{
 			"lists": []map[string]interface{}{
 				{
@@ -219,77 +259,51 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				},
 			},
 		}
-		jsonResponse(w, map[string]interface{}{
-			"classification": fullClassificationName,
-			"model":          classificationInfo.Model, // Still report the intended model
-			"response":       staticResponse,
-			"response_type":  "structured_json", // Indicate the type of response
-		})
-		return
-	}
 
-	// 8. Handle streaming vs non-streaming mode
-	if requestBody.Stream {
-		// Set up SSE response headers
-		w.Header().Set("Content-Type", "text/event-stream")
-		w.Header().Set("Cache-Control", "no-cache")
-		w.Header().Set("Connection", "keep-alive")
-		w.Header().Set("X-Accel-Buffering", "no") // For Nginx
-		w.WriteHeader(http.StatusOK)
-
-		// Send initial message with classification info
-		initialEvent := ServerSentEvent{
-			Event: "metadata",
+		// Send the static content as a single chunk
+		chunkEvent := ServerSentEvent{
+			Event: "chunk",
 			Data: string(mustJSON(map[string]interface{}{
-				"classification": fullClassificationName,
-				"model":          classificationInfo.Model,
+				// "classification": fullClassificationName, // Already in metadata
+				// "model":          classificationInfo.Model, // Already in metadata
+				"response":      staticResponse,
+				"response_type": "structured_json",
+				"done":          false, // This chunk is part of the stream, but not the final "done" signal itself.
 			})),
 		}
-		if err := writeSSE(w, initialEvent); err != nil {
-			log.Printf("ERROR: Failed to write initial SSE event: %v", err)
-			return
+		if err := writeSSE(w, chunkEvent); err != nil {
+			log.Printf("ERROR: Failed to write static content SSE event: %v", err)
+			// Error event might be good here, but the stream is likely broken.
+			// We'll proceed to send the done event.
 		}
 		w.(http.Flusher).Flush()
 
-		// Stream response from OpenRouter
+	} else {
+		// Stream response from OpenRouter for other classifications
 		err = streamOpenRouterResponse(r.Context(), w, requestBody.Prompt, classificationInfo.Model)
 		if err != nil {
 			log.Printf("ERROR: Streaming OpenRouter response failed: %v", err)
 			errorEvent := ServerSentEvent{
 				Event: "error",
-				Data:  fmt.Sprintf(`{"error": "%s"}`, err.Error()),
+				Data:  fmt.Sprintf(`{"error": "%s", "done": false}`, err.Error()), // done is false as stream is not successfully done
 			}
-			writeSSE(w, errorEvent)
+			// Attempt to send error to client, though connection might be broken
+			writeSSE(w, errorEvent) // Best effort
 			w.(http.Flusher).Flush()
+			// Do not return here, ensure "done" event is sent
 		}
-
-		// Send end event
-		endEvent := ServerSentEvent{
-			Event: "done",
-			Data:  "{}",
-		}
-		writeSSE(w, endEvent)
-		w.(http.Flusher).Flush()
-		return
 	}
 
-	// Non-streaming mode (existing behavior)
-	log.Printf("Forwarding prompt to OpenRouter using model: %s", classificationInfo.Model)
-	openRouterResponse, err := getOpenRouterResponseWithRetry(requestBody.Prompt, "", classificationInfo.Model, 3) // 3 retries
-	if err != nil {
-		log.Printf("ERROR: OpenRouter request failed after retries: %v", err)
-		http.Error(w, "Internal Server Error: Failed to get response from language model", http.StatusInternalServerError)
-		return
+	// Send end event
+	endEvent := ServerSentEvent{
+		Event: "done",
+		Data:  string(mustJSON(map[string]interface{}{"done": true})),
 	}
-
-	// 9. Return Successful Response
-	log.Printf("Successfully received response from OpenRouter for classification: %s", fullClassificationName)
-	jsonResponse(w, map[string]interface{}{
-		"classification": fullClassificationName,
-		"model":          classificationInfo.Model,
-		"response":       openRouterResponse,
-		"response_type":  "text", // Indicate the type of response
-	})
+	if err := writeSSE(w, endEvent); err != nil {
+		log.Printf("ERROR: Failed to write end SSE event: %v", err)
+	}
+	w.(http.Flusher).Flush()
+	log.Println("Finished request and sent done event.")
 }
 
 // --- Helper Functions ---
@@ -297,7 +311,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 // classifyPrompt sends the user input to a local Ollama instance for classification.
 // Now specifically using the classificationModel (gemma3:4b).
 func classifyPrompt(userInput string) (string, error) {
-	classificationPrompt := `Analyze the user's request below and classify it into one of the following categories.
+	classificationPrompt := `Analyze the user\'s request below and classify it into one of the following categories.
 
 CONTEXT START
 ` + userInput + `
@@ -305,16 +319,16 @@ CONTEXT END
 
 Classifications:
 1 - Research & Knowledge (Finding information, summarizing data, answering factual questions)
-2 - Planning & Strategy (Organization, time management, project planning, decision-making)
+2 - Complex Problem Solving & Strategy (Organization, time management, project planning, decision-making)
 3 - Writing & Communication (Text refinement, proofreading, style adjustment, clarity improvement)
 4 - Explanation & Instruction (Breaking down complex topics, teaching concepts, how-to guides)
 5 - Content Generation (Creating structured content like lists, tables, or formatted information)
 6 - Emotional Intelligence & Support (Advice, motivation, emotional processing, wellness)
-7 - Code & Technical Assistance (Programming help, debugging, technical explanation)
+7 - Advanced Reasoning, Coding & Technical Tasks (Programming help, debugging, technical explanation, knowledge retrieval, text summarization, mathematics)
 8 - Creative & Artistic (Fiction writing, idea generation, artistic concepts, storytelling)
-9 - Reasoning & Analysis (Critical thinking, ethical analysis, argument evaluation, logic)
+9 - Efficient Reasoning & Analysis (Critical thinking, ethical analysis, argument evaluation, logic, strong multimodal and reasoning capabilities, fast, cost-efficient)
 
-Based *only* on the user's request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification.`
+Based *only* on the user\'s request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification.`
 
 	reqPayload := completionRequest{
 		Model:  classificationModel, // Use the specified classification model
@@ -558,7 +572,7 @@ func streamOpenRouterResponse(ctx context.Context, w http.ResponseWriter, userIn
 				// Create and send SSE event
 				event := ServerSentEvent{
 					Event: "chunk",
-					Data:  string(mustJSON(map[string]string{"content": content})),
+					Data:  string(mustJSON(map[string]interface{}{"content": content, "done": false})),
 				}
 				
 				if err := writeSSE(w, event); err != nil {
@@ -640,6 +654,9 @@ func getOpenRouterResponseWithRetry(userInput, _, model string, maxRetries int) 
 }
 
 // jsonResponse is a helper to marshal data to JSON and write it to the response writer.
+// This function is no longer directly used by the main handler path for successful responses,
+// but might be kept for other purposes or future use.
+// If it's definitely not needed, it could be removed. For now, let's keep it.
 func jsonResponse(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	// Marshal the data
