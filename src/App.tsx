@@ -115,7 +115,6 @@ function App() {
   const [isFocused, setIsFocused] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [selectedModel, setSelectedModel] = useState(ALL_MODEL_OPTIONS[0].id) // Default to auto
-  const [respondingModel, setRespondingModel] = useState<string | undefined>(undefined); // To store the model name from API response
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [modelSearchTerm, setModelSearchTerm] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null)
