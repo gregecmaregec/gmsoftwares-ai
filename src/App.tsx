@@ -4,7 +4,22 @@ import { useTheme } from './ThemeContext'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Privacy from './components/Privacy'
 import About from './components/About'
-import { Brain, Send } from 'lucide-react'
+import { Brain, Send, ClipboardCopy, Check } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import type { Options, Components } from 'react-markdown' // For components prop typing
+import remarkGfm from 'remark-gfm'
+import { PrismAsyncLight as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { atomDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+
+// Define props for our custom code component to align with ReactMarkdown
+interface CustomCodeProps {
+  node?: any; // AST node, provided by ReactMarkdown
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  // Allow other props that might be passed by ReactMarkdown or remark-gfm
+  [key: string]: any; 
+}
 
 // Define message type
 interface Message {
@@ -127,11 +142,6 @@ function App() {
     model.name.toLowerCase().includes(modelSearchTerm.toLowerCase()) ||
     (model.provider && model.provider.toLowerCase().includes(modelSearchTerm.toLowerCase()))
   );
-
-  // Scroll to bottom of messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
-  }, [messages])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -376,6 +386,59 @@ function App() {
                             <span className="loading-dot"></span>
                             <span className="loading-dot"></span>
                           </div>
+                        ) : message.sender === 'ai' ? (
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code: ({ node, inline, className, children, ...props }: CustomCodeProps) => {
+                                const { theme } = useTheme();
+                                const match = /language-(\w+)/.exec(className || '');
+                                const [isCopied, setIsCopied] = useState(false);
+
+                                const { style: _style, dangerouslySetInnerHTML, ...restHtmlProps } = props;
+
+                                if (!inline && match) {
+                                  const codeString = String(children).replace(/\n$/, '');
+                                  const handleCopy = () => {
+                                    navigator.clipboard.writeText(codeString).then(() => {
+                                      setIsCopied(true);
+                                      setTimeout(() => setIsCopied(false), 2000);
+                                    });
+                                  };
+
+                                  return (
+                                    <div style={{ position: 'relative' }}> {/* Wrapper for position:relative context */}
+                                      <button 
+                                        onClick={handleCopy} 
+                                        className="copy-code-button"
+                                        aria-label={isCopied ? "Copied!" : "Copy code"}
+                                      >
+                                        {isCopied ? <Check size={14} /> : <ClipboardCopy size={14} />}
+                                      </button>
+                                      <SyntaxHighlighter
+                                        style={theme === 'dark' ? atomDark : oneLight}
+                                        language={match[1]}
+                                        PreTag="div" // This div is targeted by div[class*="language-"] 
+                                                     // and its pre child is div[class*="language-"] pre
+                                        {...restHtmlProps}
+                                      >
+                                        {codeString}
+                                      </SyntaxHighlighter>
+                                    </div>
+                                  );
+                                } else {
+                                  // For inline code or code blocks without a language match
+                                  return (
+                                    <code className={className} {...restHtmlProps}> {/* Pass remaining valid HTML attributes */}
+                                      {children}
+                                    </code>
+                                  );
+                                }
+                              }
+                            } as Components}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
                         ) : (
                           message.content
                         )}
