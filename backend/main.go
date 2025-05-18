@@ -144,9 +144,32 @@ func main() {
 
 // handler is the main HTTP request handler
 func handler(w http.ResponseWriter, r *http.Request) {
-	// CORS Headers - Adjust origin as necessary for your frontend dev server
-	w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com") // Or "http://localhost:3000", etc.
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	// Define allowed origins
+	allowedOrigins := []string{
+		"https://ai.gmsoftwares.com",
+		"http://localhost:5173",
+	}
+
+	// Check the request origin
+	origin := r.Header.Get("Origin")
+	allowed := false
+	for _, o := range allowedOrigins {
+		if o == origin {
+			allowed = true
+			break
+		}
+	}
+
+	if allowed {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	} else {
+		// Fallback or deny - for now, let's fallback to the primary production domain
+		// Alternatively, you might choose not to set the header or return an error
+		// if the origin is not in the allowed list and is present.
+		w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com")
+	}
+	// w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com") // Or "http://localhost:3000", etc.
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 
 	// Handle preflight OPTIONS requests

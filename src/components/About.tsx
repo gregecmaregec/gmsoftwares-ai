@@ -13,7 +13,7 @@ const About: React.FC = () => {
       <div className="privacy-section">
         <h2>Project Background</h2> 
         <p>
-          The idea is to create a "one for all" AI that acts as a portal to the best AI in the world. Ask your question to AI - and the AI will decide which AI to use. You, as the human, serve as the "source of Will" for the AI. Hopefully, this is how the future of AI will work.
+          The idea is to create a "one for all" AI that acts as a portal to the best AI in the world. Ask your question to AI - and the AI will decide which AI to use. You, as the human, serve as the "source of Will" for the AI. It's my wish for how the future of AI will look.
         </p>
         
         <h2>Technology</h2>
