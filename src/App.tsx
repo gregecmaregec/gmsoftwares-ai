@@ -430,55 +430,57 @@ function App() {
                     </span>
                   </div>
                   
-                  <div className={`model-dropdown ${isDropdownOpen ? 'open' : ''}`}>
-                    <div className="model-search-input-wrapper">
-                      <input
-                        type="text"
-                        placeholder="Search"
-                        className="model-search-input"
-                        value={modelSearchTerm}
-                        onChange={(e) => setModelSearchTerm(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                  {isDropdownOpen && (
+                    <div className="model-dropdown open">
+                      <div className="model-search-input-wrapper">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          className="model-search-input"
+                          value={modelSearchTerm}
+                          onChange={(e) => setModelSearchTerm(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <div className="model-options-list">
+                        {filteredModelOptions.map((model, index) => {
+                          const isLastTopTierBeforeRest =
+                            TOP_TIER_MODEL_IDS.has(model.id) &&
+                            (() => {
+                              const originalIndex = ALL_MODEL_OPTIONS.findIndex(m => m.id === model.id);
+                              // Ensure model is found and not the last in the original list
+                              if (originalIndex === -1 || originalIndex === ALL_MODEL_OPTIONS.length - 1) {
+                                return false;
+                              }
+                              const nextOriginalModel = ALL_MODEL_OPTIONS[originalIndex + 1];
+                              return !TOP_TIER_MODEL_IDS.has(nextOriginalModel.id);
+                            })();
+
+                          // Check if there's any non-top-tier model *after* this one in the *filtered* list
+                          const subsequentFilteredNonTopTierExists =
+                            filteredModelOptions.slice(index + 1).some(nextFilteredModel => !TOP_TIER_MODEL_IDS.has(nextFilteredModel.id));
+
+                          const showDivider = isLastTopTierBeforeRest && subsequentFilteredNonTopTierExists;
+
+                          return (
+                            <React.Fragment key={model.id}>
+                              <div
+                                className={`model-option ${selectedModel === model.id ? 'selected' : ''}`}
+                                onClick={() => selectModelOption(model.id)}
+                              >
+                                <div className="model-option-name">{model.name}</div>
+                                {model.provider && <div className="model-option-provider">{model.provider}</div>}
+                              </div>
+                              {showDivider && <div className="model-divider" />}
+                            </React.Fragment>
+                          );
+                        })}
+                        {filteredModelOptions.length === 0 && (
+                          <div className="model-option-empty">No AI found.</div>
+                        )}
+                      </div>
                     </div>
-                    <div className="model-options-list">
-                      {filteredModelOptions.map((model, index) => {
-                        const isLastTopTierBeforeRest =
-                          TOP_TIER_MODEL_IDS.has(model.id) &&
-                          (() => {
-                            const originalIndex = ALL_MODEL_OPTIONS.findIndex(m => m.id === model.id);
-                            // Ensure model is found and not the last in the original list
-                            if (originalIndex === -1 || originalIndex === ALL_MODEL_OPTIONS.length - 1) {
-                              return false;
-                            }
-                            const nextOriginalModel = ALL_MODEL_OPTIONS[originalIndex + 1];
-                            return !TOP_TIER_MODEL_IDS.has(nextOriginalModel.id);
-                          })();
-
-                        // Check if there's any non-top-tier model *after* this one in the *filtered* list
-                        const subsequentFilteredNonTopTierExists =
-                          filteredModelOptions.slice(index + 1).some(nextFilteredModel => !TOP_TIER_MODEL_IDS.has(nextFilteredModel.id));
-
-                        const showDivider = isLastTopTierBeforeRest && subsequentFilteredNonTopTierExists;
-
-                        return (
-                          <React.Fragment key={model.id}>
-                            <div
-                              className={`model-option ${selectedModel === model.id ? 'selected' : ''}`}
-                              onClick={() => selectModelOption(model.id)}
-                            >
-                              <div className="model-option-name">{model.name}</div>
-                              {model.provider && <div className="model-option-provider">{model.provider}</div>}
-                            </div>
-                            {showDivider && <div className="model-divider" />}
-                          </React.Fragment>
-                        );
-                      })}
-                      {filteredModelOptions.length === 0 && (
-                        <div className="model-option-empty">No AI found.</div>
-                      )}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </form>
             </div>

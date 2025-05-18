@@ -33,15 +33,15 @@ var classificationMap = map[string]struct {
 }{
 	"1": {
 		Name:  "Research & Knowledge",
-		Model: "perplexity/sonar-pro", // Perplexity models excel at research and knowledge tasks
+		Model: "x-ai/grok-3-mini-beta", // Perplexity models excel at research and knowledge tasks
 	},
 	"2": {
 		Name:  "Complex Problem Solving & Strategy",
-		Model: "anthropic/claude-3.7-sonnet:thinking", // Excels at complex reasoning, problem-solving
+		Model: "x-ai/grok-3-mini-beta", // Excels at complex reasoning, problem-solving
 	},
 	"3": {
 		Name:  "Writing & Communication",
-		Model: "anthropic/claude-3.7-sonnet", // Strong model for writing assistance and clear communication
+		Model: "x-ai/grok-3-mini-beta", // Strong model for writing assistance and clear communication
 	},
 	"4": {
 		Name:  "Explanation & Instruction",
@@ -53,7 +53,7 @@ var classificationMap = map[string]struct {
 	},
 	"6": {
 		Name:  "Emotional Intelligence & Support",
-		Model: "anthropic/claude-3.7-sonnet", // Empathetic and conversational model
+		Model: "google/gemini-2.5-flash-preview", // Empathetic and conversational model
 	},
 	"7": {
 		Name:  "Advanced Reasoning, Coding & Technical Tasks",
@@ -144,32 +144,29 @@ func main() {
 
 // handler is the main HTTP request handler
 func handler(w http.ResponseWriter, r *http.Request) {
-	// Define allowed origins
-	allowedOrigins := []string{
-		"https://ai.gmsoftwares.com",
-		"http://localhost:5173",
-	}
-
-	// Check the request origin
+	// CORS Headers - Adjust origin as necessary for your frontend dev server
 	origin := r.Header.Get("Origin")
-	allowed := false
-	for _, o := range allowedOrigins {
-		if o == origin {
-			allowed = true
+	allowedOrigins := []string{"https://ai.gmsoftwares.com", "http://localhost:5173"}
+	isAllowed := false
+	for _, allowedOrigin := range allowedOrigins {
+		if origin == allowedOrigin {
+			isAllowed = true
 			break
 		}
 	}
 
-	if allowed {
+	if isAllowed {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	} else {
-		// Fallback or deny - for now, let's fallback to the primary production domain
-		// Alternatively, you might choose not to set the header or return an error
-		// if the origin is not in the allowed list and is present.
-		w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com")
+		// Optionally, deny the request if the origin is not in the allowed list
+		// For now, we'll stick to the previous behavior of setting a default or letting it be.
+		// If you want to strictly enforce, you might return an error here.
+		// For this example, if not in allowed list, it might fall back to browser default or no CORS header.
+		// Or, to maintain previous single-origin behavior if not matched:
+		// w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com")
 	}
-	// w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com") // Or "http://localhost:3000", etc.
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 
 	// Handle preflight OPTIONS requests

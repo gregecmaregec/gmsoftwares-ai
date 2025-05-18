@@ -477,6 +477,19 @@ h1 {
   pointer-events: all;
 }
 
+/* Styles for when the dropdown opens upwards */
+.model-dropdown.opens-up {
+  top: auto; /* Override the default top positioning */
+  bottom: calc(100% + 4px); /* Position its bottom edge above its container */
+  transform: translateY(-10px); /* Initial transform for animation (when closed) */
+}
+
+.model-dropdown.opens-up.open {
+  opacity: 1;
+  transform: translateY(0); /* Final transform for animation (when open) */
+  pointer-events: all;
+}
+
 .model-search-input-wrapper {
   padding: 8px;
   border-bottom: 1px solid var(--border-color, rgba(125, 125, 125, 0.1));
