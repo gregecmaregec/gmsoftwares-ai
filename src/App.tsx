@@ -6,7 +6,7 @@ import Privacy from './components/Privacy'
 import About from './components/About'
 import { Brain, Send, ClipboardCopy, Check } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import type { Options, Components } from 'react-markdown' // For components prop typing
+import type { Components } from 'react-markdown' // For components prop typing
 import remarkGfm from 'remark-gfm'
 import { PrismAsyncLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
