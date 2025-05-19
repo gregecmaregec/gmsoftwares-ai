@@ -28,11 +28,12 @@ const (ContextMaxChars = 4000 * 3) // Assuming average 3 chars per token for con
 
 // classificationMap defines the different model capabilities the backend can handle.
 var classificationMap = map[string]struct {
-	Name  string
-	Model string // OpenRouter model for generation
+	Name             string
+	Model            string // OpenRouter model for generation
+	AdditionalPrompt string // New field for prepending to user prompt
 }{
 	"1": {
-		Name:  "Real world Research & Knowledge requiring web search",
+		Name:  "Real-time web-necessary Research & Knowledge",
 		Model: "x-ai/grok-3-mini-beta:online", // Perplexity models excel at research and knowledge tasks
 	},
 	"2": {
@@ -62,6 +63,11 @@ var classificationMap = map[string]struct {
 	"8": {
 		Name:  "Creative & Artistic",
 		Model: "openai/gpt-4.5-preview", // Strong creative and instruction-following model
+	},
+	"9": {
+		Name: "Small chit chat",
+		Model: "microsoft/phi-4",
+		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. User message: ",
 	},
 }
 
@@ -140,28 +146,8 @@ func main() {
 
 // handler is the main HTTP request handler
 func handler(w http.ResponseWriter, r *http.Request) {
-	// CORS Headers - Adjust origin as necessary for your frontend dev server
-	origin := r.Header.Get("Origin")
-	allowedOrigins := []string{"https://ai.gmsoftwares.com", "http://localhost:5173"}
-	isAllowed := false
-	for _, allowedOrigin := range allowedOrigins {
-		if origin == allowedOrigin {
-			isAllowed = true
-			break
-		}
-	}
-
-	if isAllowed {
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-	} else {
-		// Optionally, deny the request if the origin is not in the allowed list
-		// For now, we'll stick to the previous behavior of setting a default or letting it be.
-		// If you want to strictly enforce, you might return an error here.
-		// For this example, if not in allowed list, it might fall back to browser default or no CORS header.
-		// Or, to maintain previous single-origin behavior if not matched:
-		// w.Header().Set("Access-Control-Allow-Origin", "https://ai.gmsoftwares.com")
-	}
-
+	// CORS Headers - Allow all origins
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 
@@ -249,6 +235,28 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		classificationNameForMetadata = classificationNumber + "-" + classificationInfo.Name
 		modelSelectedByClassification = classificationInfo.Model
 		log.Printf("Mapped to: %s (Model: %s)", classificationNameForMetadata, chosenModel)
+
+		// Prepend AdditionalPrompt if it exists for the classification
+		if classificationInfo.AdditionalPrompt != "" {
+			// Find the last user message and prepend the additional prompt
+			// We iterate from the end to find the *last* user message.
+			// The original user input is already extracted into `userInput` for classification,
+			// but for sending to OpenRouter, we modify the `requestBody.Messages` array.
+			modifiedMessages := false
+			for i := len(requestBody.Messages) - 1; i >= 0; i-- {
+				if requestBody.Messages[i].Role == "user" {
+					// Prepend the additional prompt to the existing content of the last user message
+					requestBody.Messages[i].Content = classificationInfo.AdditionalPrompt + "\n" + requestBody.Messages[i].Content
+					log.Printf("INFO: Prepended additional prompt to user message for classification %s: '%s'", classificationNumber, classificationInfo.AdditionalPrompt)
+					modifiedMessages = true
+					break // Modify only the last user message
+				}
+			}
+			if !modifiedMessages {
+				log.Printf("WARN: AdditionalPrompt was present for classification %s, but no user message was found in the request to prepend it to.", classificationNumber)
+			}
+		}
+
 	} else {
 		// Direct model specified
 		classificationNameForMetadata = "direct_request_classification_skipped"
@@ -485,7 +493,7 @@ CONTEXT START
 CONTEXT END
 
 Classifications:
-1 - Real world Research & Knowledge requiring web search, up to date knowledge
+1 - Real-time web-necessary Research & Knowledge
 2 - Complex Problem Solving & Strategy 
 3 - Writing & Communication 
 4 - Explanation & Instruction 
@@ -493,6 +501,7 @@ Classifications:
 6 - Emotional Intelligence & Support
 7 - Coding, Programming, and Technical Tasks
 8 - Creative & Artistic
+9 - Small talk (short messages, like Hi or Hello or How are you or asking for a joke)
 
 Based *only* on the user\'s request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification.`
 
