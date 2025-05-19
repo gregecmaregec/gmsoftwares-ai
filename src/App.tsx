@@ -440,7 +440,9 @@ function App() {
                             {message.content}
                           </ReactMarkdown>
                         ) : (
-                          message.content
+                          <div style={{ whiteSpace: 'pre-wrap' }}>
+                            {message.content}
+                          </div>
                         )}
                       </div>
                     </div>
