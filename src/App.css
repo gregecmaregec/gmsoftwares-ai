@@ -946,14 +946,10 @@ h1 {
   margin-bottom: 1em;
 }
 
-/* Remove top margin for the first heading in the response */
-.message.ai .message-content h1:first-child,
-.message.ai .message-content h2:first-child,
-.message.ai .message-content h3:first-child,
-.message.ai .message-content h4:first-child,
-.message.ai .message-content h5:first-child,
-.message.ai .message-content h6:first-child {
-  margin-top: 0;
+/* Special case for first h1 in the message content */
+.message.ai .message-content h1:first-child {
+  margin-top: 1em;
+  margin-bottom: 2em;
 }
 
 .message.ai .message-content h1 { font-size: 1.6rem; }
