@@ -134,6 +134,8 @@ function App() {
   const [selectedModel, setSelectedModel] = useState(ALL_MODEL_OPTIONS[0].id) // Default to auto
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [modelSearchTerm, setModelSearchTerm] = useState('');
+  const [isAiResponding, setIsAiResponding] = useState(false);
+  const [showStartupAnimation, setShowStartupAnimation] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -153,6 +155,16 @@ function App() {
     }
   }, [inputValue])
   
+  // Effect to manage animation based on AI responding state
+  useEffect(() => {
+    if (isAiResponding) {
+      setShowStartupAnimation(false); // AI is working, ensure animations are off for the wrapper
+    } else {
+      // AI is done. Allow animations. If input isn't focused, it might play.
+      setShowStartupAnimation(true);
+    }
+  }, [isAiResponding]);
+
   // Handle clicks outside dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -181,7 +193,10 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const currentInput = inputValue.trim();
-    if (!currentInput) return;
+    if (!currentInput || isAiResponding) return;
+
+    setIsAiResponding(true);
+    setShowStartupAnimation(false); // Explicitly turn off animation when starting submission
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -343,6 +358,8 @@ function App() {
       setMessages(prev => prev.map(msg =>
         msg.id === aiMessageId ? { ...msg, content: `Error: ${error instanceof Error ? error.message : String(error)}` } : msg
       ));
+    } finally {
+      setIsAiResponding(false);
     }
   };
   
@@ -463,14 +480,22 @@ function App() {
               </div>
               
               <form onSubmit={handleSubmit} className="search-form">
-                <div className={`search-input-wrapper ${isFocused ? 'focused' : ''}`}>
+                <div className={`search-input-wrapper ${isFocused ? 'focused' : ''} ${showStartupAnimation && !isFocused && !isAiResponding ? 'play-startup-animation' : ''}`}>
                   <textarea
                     ref={inputRef}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
+                    onFocus={() => {
+                      setIsFocused(true);
+                      setShowStartupAnimation(false); // Animation should stop when focused
+                    }}
+                    onBlur={() => {
+                      setIsFocused(false);
+                      if (inputValue.trim() === '' && !isAiResponding) {
+                        setShowStartupAnimation(true); // Play animation if blurred, empty, and AI not busy
+                      }
+                    }}
                     placeholder={
                       isFocused ? "" : 
                       selectedModel === 'auto' ? "Ask Artificial Intelligence" :
@@ -478,12 +503,15 @@ function App() {
                     }
                     className="search-input"
                     rows={1}
+                    disabled={isAiResponding}
+                    title={isAiResponding ? "AI is responding..." : undefined}
                   />
                   <button 
-                    className={`send-button ${inputValue.trim() ? 'active' : ''}`}
+                    className={`send-button ${inputValue.trim() && !isAiResponding ? 'active' : ''}`}
                     onClick={handleSubmit}
                     type="submit"
                     aria-label="Send message"
+                    disabled={isAiResponding}
                   >
                     <Send size={16} className="send-icon" />
                   </button>

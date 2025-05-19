@@ -217,7 +217,7 @@ h1 {
 }
 
 /* Add the light beam effect that disappears on focus */
-.search-input-wrapper:not(.focused)::before {
+.search-input-wrapper.play-startup-animation::before {
   content: '';
   position: absolute;
   top: 0;
@@ -238,12 +238,12 @@ h1 {
 }
 
 /* Add subtle border glow that also disappears on focus */
-.search-input-wrapper:not(.focused) {
+.search-input-wrapper.play-startup-animation {
   animation: remove-box-shadow 4s ease-in-out 1 forwards;
 }
 
 /* Subtle pulsing border light effect */
-.search-input-wrapper:not(.focused)::after {
+.search-input-wrapper.play-startup-animation::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -268,8 +268,8 @@ h1 {
 
 /* Disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion) {
-  .search-input-wrapper:not(.focused)::before,
-  .search-input-wrapper:not(.focused)::after {
+  .search-input-wrapper.play-startup-animation::before,
+  .search-input-wrapper.play-startup-animation::after {
     animation: none;
     opacity: 0.6;
   }
