@@ -946,6 +946,16 @@ h1 {
   margin-bottom: 1em;
 }
 
+/* Remove top margin for the first heading in the response */
+.message.ai .message-content h1:first-child,
+.message.ai .message-content h2:first-child,
+.message.ai .message-content h3:first-child,
+.message.ai .message-content h4:first-child,
+.message.ai .message-content h5:first-child,
+.message.ai .message-content h6:first-child {
+  margin-top: 0;
+}
+
 .message.ai .message-content h1 { font-size: 1.6rem; }
 .message.ai .message-content h2 { font-size: 1.4rem; }
 .message.ai .message-content h3 { font-size: 1.25rem; }
