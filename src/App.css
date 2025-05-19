@@ -330,10 +330,34 @@ h1 {
   border-radius: 24px;
   transition: all 0.3s ease;
   resize: none;
-  overflow-y: hidden;
+  overflow-y: auto; /* Changed from hidden to auto to enable scrolling */
   line-height: 1.5;
   max-height: 200px;
   text-align: left;
+  scrollbar-width: thin; /* For Firefox */
+}
+
+/* Add custom scrollbar styling for Webkit browsers */
+.search-input::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-input::-webkit-scrollbar-thumb {
+  background-color: rgba(125, 125, 125, 0.2);
+  border-radius: 3px;
+}
+
+.search-input::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Dark theme scrollbar styling */
+[data-theme="dark"] .search-input::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 200, 0.35);
+}
+
+[data-theme="dark"] .search-input {
+  scrollbar-color: rgba(180, 180, 200, 0.35) transparent;
 }
 
 .search-input::placeholder {
