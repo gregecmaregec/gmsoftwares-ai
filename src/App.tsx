@@ -182,9 +182,10 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const currentInput = inputValue.trim();
-    if (!currentInput || isAiResponding) return;
+    if (!currentInput) return;
 
     setIsAiResponding(true);
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: currentInput,
@@ -475,7 +476,6 @@ function App() {
                     onKeyDown={handleKeyDown}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    disabled={isAiResponding}
                     placeholder={
                       isFocused ? "" : 
                       selectedModel === 'auto' ? "Ask Artificial Intelligence" :
@@ -483,9 +483,16 @@ function App() {
                     }
                     className="search-input"
                     rows={1}
+                    disabled={isAiResponding}
                   />
-                  <button type="submit" className="send-button" disabled={isAiResponding}>
-                    <Send size={20} />
+                  <button 
+                    className={`send-button ${inputValue.trim() && !isAiResponding ? 'active' : ''}`}
+                    onClick={handleSubmit}
+                    type="submit"
+                    aria-label="Send message"
+                    disabled={isAiResponding}
+                  >
+                    <Send size={16} className="send-icon" />
                   </button>
                 </div>
                 
