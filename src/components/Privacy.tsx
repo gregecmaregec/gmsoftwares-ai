@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 
 const Privacy: React.FC = () => {
   return (
-    <div className="privacy-container">
+    <div className="privacy-container" style={{
+      maxWidth: '100%',
+      padding: '1rem',
+      boxSizing: 'border-box'
+    }}>
       <h1>Privacy Policy</h1>
       
       <p>
@@ -13,18 +17,23 @@ const Privacy: React.FC = () => {
       <div className="privacy-section">
         <h2>Information I Collect</h2>
         <p>When you use this service, this is an example of a log I make:</p>
-        <pre className="log-example" style={{
-          backgroundColor: '#1e1e1e',
-          color: '#d4d4d4',
-          padding: '1rem',
-          borderRadius: '6px',
-          fontSize: '0.85rem',
-          fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-          lineHeight: '1.4',
+        <div style={{
+          width: '100%',
           overflowX: 'auto',
-          whiteSpace: 'pre',
           margin: '1rem 0'
         }}>
+          <pre className="log-example" style={{
+            backgroundColor: '#1e1e1e',
+            color: '#d4d4d4',
+            padding: '1rem',
+            borderRadius: '6px',
+            fontSize: '0.85rem',
+            fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+            lineHeight: '1.4',
+            whiteSpace: 'pre',
+            margin: 0,
+            minWidth: 'min-content'
+          }}>
 {`2025/05/19 07:00:01 Received request for model 'auto', stream: true.
 2025/05/19 07:00:02 DEBUG: Raw classification response from Ollama: '7'
 2025/05/19 07:00:02 Classified as: 7
@@ -32,7 +41,8 @@ const Privacy: React.FC = () => {
 2025/05/19 07:00:20 Successfully forwarded data: [DONE] from OpenRouter.
 2025/05/19 07:00:20 Successfully streamed full response from OpenRouter, forwarded [DONE]. Total content characters (approx): 6377
 2025/05/19 07:00:20 Finished streaming request.`}
-        </pre>
+          </pre>
+        </div>
         
         <p>Notice the following: I don't log your:</p>
         <ul>

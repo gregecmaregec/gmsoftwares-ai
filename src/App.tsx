@@ -74,6 +74,7 @@ const ALL_MODEL_OPTIONS = [
   // top of the line
   { id: 'auto', name: 'auto'},
   { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini β', provider: 'xAI' },
+  { id: 'x-ai/grok-3-mini-beta:online', name: 'Grok 3 Mini β + Web Search', provider: 'xAI' },
   { id: 'openai/o4-mini-high', name: 'GPT-o4 Mini High', provider: 'OpenAI' },
   { id: 'openai/codex-mini', name: 'OpenAI Codex Mini', provider: 'OpenAI' },
   { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
@@ -115,6 +116,7 @@ const ALL_MODEL_OPTIONS = [
 const TOP_TIER_MODEL_IDS = new Set([
   'auto',
   'x-ai/grok-3-mini-beta',
+  'x-ai/grok-3-mini-beta:online',
   'openai/o4-mini-high',
   'anthropic/claude-3.7-sonnet:thinking',
   'google/gemini-2.5-pro-preview',

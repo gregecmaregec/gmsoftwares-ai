@@ -32,12 +32,12 @@ var classificationMap = map[string]struct {
 	Model string // OpenRouter model for generation
 }{
 	"1": {
-		Name:  "Research & Knowledge",
-		Model: "x-ai/grok-3-mini-beta", // Perplexity models excel at research and knowledge tasks
+		Name:  "Real world Research & Knowledge requiring web search",
+		Model: "x-ai/grok-3-mini-beta:online", // Perplexity models excel at research and knowledge tasks
 	},
 	"2": {
 		Name:  "Complex Problem Solving & Strategy",
-		Model: "x-ai/grok-3-mini-beta", // Excels at complex reasoning, problem-solving
+		Model: "openai/o4-mini-high", // Excels at complex reasoning, problem-solving
 	},
 	"3": {
 		Name:  "Writing & Communication",
@@ -49,23 +49,19 @@ var classificationMap = map[string]struct {
 	},
 	"5": {
 		Name:  "Content Generation",
-		Model: "google/gemini-2.5-pro-preview-03-25", // Good for structured data and content generation
+		Model: "x-ai/grok-3-mini-beta:online", // Good for structured data and content generation
 	},
 	"6": {
 		Name:  "Emotional Intelligence & Support",
 		Model: "google/gemini-2.5-flash-preview", // Empathetic and conversational model
 	},
 	"7": {
-		Name:  "Advanced Reasoning, Coding & Technical Tasks",
+		Name:  "Coding & Technical Tasks",
 		Model: "x-ai/grok-3-mini-beta", // Top-tier model for coding, reasoning, summarization
 	},
 	"8": {
 		Name:  "Creative & Artistic",
 		Model: "openai/gpt-4.5-preview", // Strong creative and instruction-following model
-	},
-	"9": {
-		Name:  "Efficient Reasoning & Analysis",
-		Model: "openai/o4-mini-high", // Compact, fast, cost-efficient reasoning model
 	},
 }
 
@@ -489,15 +485,14 @@ CONTEXT START
 CONTEXT END
 
 Classifications:
-1 - Research & Knowledge (Finding information, summarizing data, answering factual questions)
-2 - Complex Problem Solving & Strategy (Organization, time management, project planning, decision-making)
-3 - Writing & Communication (Text refinement, proofreading, style adjustment, clarity improvement)
-4 - Explanation & Instruction (Breaking down complex topics, teaching concepts, how-to guides)
-5 - Content Generation (Creating structured content like lists, tables, or formatted information)
-6 - Emotional Intelligence & Support (Advice, motivation, emotional processing, wellness)
-7 - Advanced Reasoning, Coding & Technical Tasks (Programming help, debugging, technical explanation, knowledge retrieval, text summarization, mathematics)
-8 - Creative & Artistic (Fiction writing, idea generation, artistic concepts, storytelling)
-9 - Efficient Reasoning & Analysis (Critical thinking, ethical analysis, argument evaluation, logic, strong multimodal and reasoning capabilities, fast, cost-efficient)
+1 - Real world Research & Knowledge requiring web search, up to date knowledge
+2 - Complex Problem Solving & Strategy 
+3 - Writing & Communication 
+4 - Explanation & Instruction 
+5 - Content Generation 
+6 - Emotional Intelligence & Support
+7 - Coding, Programming, and Technical Tasks
+8 - Creative & Artistic
 
 Based *only* on the user\'s request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification.`
 
