@@ -264,6 +264,26 @@ function App() {
           const line = streamBuffer.substring(0, eolIndex).trim();
           streamBuffer = streamBuffer.substring(eolIndex + 1);
 
+          if (line.startsWith('event: metadata')) {
+            const nextLine = streamBuffer.substring(0, streamBuffer.indexOf('\n')).trim();
+            if (nextLine.startsWith('data: ')) {
+              try {
+                const metadata = JSON.parse(nextLine.substring(5));
+                if (metadata.final_model_used_for_generation) {
+                  currentAiMessageModel = metadata.final_model_used_for_generation;
+                  setMessages(prev =>
+                    prev.map(msg =>
+                      msg.id === aiMessageId ? { ...msg, model: currentAiMessageModel } : msg
+                    )
+                  );
+                }
+              } catch (parseError) {
+                console.error('Error parsing metadata:', parseError, 'Data:', nextLine);
+              }
+            }
+            continue;
+          }
+
           if (line.startsWith('data: ')) {
             const jsonData = line.substring(5).trim();
             if (jsonData === '[DONE]') {
@@ -272,21 +292,13 @@ function App() {
             if (jsonData) {
               try {
                 const chunk = JSON.parse(jsonData);
-                if (chunk.model && !currentAiMessageModel) {
-                  currentAiMessageModel = chunk.model;
-                  setMessages(prev =>
-                    prev.map(msg =>
-                      msg.id === aiMessageId ? { ...msg, model: currentAiMessageModel } : msg
-                    )
-                  );
-                }
                 if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
                   const deltaContent = chunk.choices[0].delta.content;
                   if (deltaContent) {
                     setMessages(prev =>
                       prev.map(msg =>
                         msg.id === aiMessageId
-                          ? { ...msg, content: msg.content + deltaContent, model: msg.model || currentAiMessageModel }
+                          ? { ...msg, content: msg.content + deltaContent, model: currentAiMessageModel }
                           : msg
                       )
                     );
@@ -294,9 +306,6 @@ function App() {
                 }
                 if (chunk.usage) {
                   console.log('API Usage:', chunk.usage);
-                }
-                if (chunk.model && !currentAiMessageModel) { // Check again for safety, though less likely here
-                  currentAiMessageModel = chunk.model;
                 }
               } catch (parseError) {
                 console.error('Error parsing stream data:', parseError, 'Data:', jsonData);
@@ -311,16 +320,13 @@ function App() {
         if (jsonData && jsonData !== '[DONE]') {
             try {
                 const chunk = JSON.parse(jsonData);
-                if (chunk.model && !currentAiMessageModel) {
-                    currentAiMessageModel = chunk.model;
-                }
                 if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
                     const deltaContent = chunk.choices[0].delta.content;
                     if (deltaContent) {
                         setMessages(prev =>
                             prev.map(msg =>
                                 msg.id === aiMessageId
-                                ? { ...msg, content: msg.content + deltaContent, model: msg.model || currentAiMessageModel }
+                                ? { ...msg, content: msg.content + deltaContent, model: currentAiMessageModel }
                                 : msg
                             )
                         );
