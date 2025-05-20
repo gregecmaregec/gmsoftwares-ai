@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('theme', theme);
     
     // Set background color directly to maintain consistency
-    const bgColor = theme === 'dark' ? '#000000' : '#ffffff';
+    const bgColor = theme === 'dark' ? '#000000' : '#F7EFE6';
     document.documentElement.style.backgroundColor = bgColor;
     document.body.style.backgroundColor = bgColor;
     

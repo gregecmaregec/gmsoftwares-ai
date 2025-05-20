@@ -67,7 +67,7 @@ var classificationMap = map[string]struct {
 	"9": {
 		Name: "Small chit chat",
 		Model: "microsoft/phi-4",
-		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. User message: ",
+		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. Don't always use the atoms joke if asked for one, use a more random joke. User message: ",
 	},
 }
 

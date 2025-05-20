@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 /* No transition during page load to prevent flash */
-html, body {
+html {
   transition: none !important;
 }
 
 /* Apply transition after page load */
 html.loaded, html.loaded body {
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s !important;
 }
 
 :root {
@@ -22,9 +22,9 @@ html.loaded, html.loaded body {
   
   /* Light theme (default) */
   --text-color: #374151;
-  --bg-color: #ffffff;
-  --secondary-bg: #f5f5f5;
-  --pill-bg-color: #f7efe619;
+  --bg-color: #F7EFE6;
+  --secondary-bg: #F7E7D4;
+  --pill-bg-color: #FBF0E4;
   --link-color: #3b82f6;
   --link-hover-color: #2563eb;
   --button-bg: #f2f1f1;
@@ -43,6 +43,10 @@ html.loaded, html.loaded body {
   --button-bg: #1f2937;
   --button-text: #e5e7eb;
   --focus-color: rgba(96, 165, 250, 0.5);
+}
+
+html {
+  background-color: var(--bg-color);
 }
 
 body {
