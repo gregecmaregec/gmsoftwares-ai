@@ -106,8 +106,8 @@ const ALL_MODEL_OPTIONS = [
   { id: 'openai/gpt-4.1-nano', name: 'GPT-4.1 Nano', provider: 'OpenAI' },
   { id: 'openai/gpt-4o', name: 'GPT-4o', provider: 'OpenAI' },
   { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI' },
-  { id: 'openai/o3-mini', name: 'O3 Mini', provider: 'OpenAI' },
-  { id: 'openai/o4-mini', name: 'O4 Mini', provider: 'OpenAI' },
+  { id: 'openai/o3-mini', name: 'GPT-o3 Mini', provider: 'OpenAI' },
+  { id: 'openai/o4-mini', name: 'GPT-o4 Mini', provider: 'OpenAI' },
   { id: 'qwen/qwen-2.5-7b-instruct', name: 'Qwen 2.5 7B Instruct', provider: 'Qwen' },
   { id: 'x-ai/grok-3-beta', name: 'Grok 3 β', provider: 'xAI' }
 ];
