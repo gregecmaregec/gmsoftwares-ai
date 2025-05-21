@@ -79,7 +79,7 @@ const ALL_MODEL_OPTIONS = [
   { id: 'openai/codex-mini', name: 'OpenAI Codex Mini', provider: 'OpenAI' },
   { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
   { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
-  { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash Preview', provider: 'Google' },
+  { id: 'google/gemini-2.5-flash-preview-05-20', name: 'Gemini 2.5 Flash Preview 05 20', provider: 'Google' },
   { id: 'openai/gpt-4.1', name: 'GPT-4.1', provider: 'OpenAI' },
   { id: 'openai/gpt-4.5-preview', name: 'GPT-4.5 Preview', provider: 'OpenAI' },
   { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
