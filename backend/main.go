@@ -33,38 +33,42 @@ var classificationMap = map[string]struct {
 	AdditionalPrompt string // New field for prepending to user prompt
 }{
 	"1": {
-		Name:  "Real-time web-necessary Research & Knowledge",
-		Model: "x-ai/grok-3-mini-beta:online", // Perplexity models excel at research and knowledge tasks
+		Name:  "Research & Knowledge",
+		Model: "google/gemini-2.5-flash-preview", // Perplexity models excel at research and knowledge tasks
 	},
 	"2": {
-		Name:  "Complex Problem Solving & Strategy",
-		Model: "openai/o4-mini-high", // Excels at complex reasoning, problem-solving
+		Name:  "Real-time web-necessary Research & Knowledge",
+		Model: "google/gemini-2.5-flash-preview:online", // Perplexity models excel at research and knowledge tasks
 	},
 	"3": {
+		Name:  "Complex Problem Solving & Strategy",
+		Model: "anthropic/claude-sonnet-4", // Excels at complex reasoning, problem-solving
+	},
+	"4": {
 		Name:  "Writing & Communication",
 		Model: "x-ai/grok-3-mini-beta", // Strong model for writing assistance and clear communication
 	},
-	"4": {
+	"5": {
 		Name:  "Explanation & Instruction",
 		Model: "google/gemini-2.5-flash-preview", // Efficient and capable model for explanations
 	},
-	"5": {
-		Name:  "Content Generation",
-		Model: "x-ai/grok-3-mini-beta:online", // Good for structured data and content generation
-	},
 	"6": {
+		Name:  "Content Generation",
+		Model: "anthropic/claude-3.7-sonnet:thinking", // Good for structured data and content generation
+	},
+	"7": {
 		Name:  "Emotional Intelligence & Support",
 		Model: "google/gemini-2.5-flash-preview", // Empathetic and conversational model
 	},
-	"7": {
-		Name:  "Coding & Technical Tasks",
-		Model: "x-ai/grok-3-mini-beta", // Top-tier model for coding, reasoning, summarization
-	},
 	"8": {
+		Name:  "Coding & Technical Tasks",
+		Model: "anthropic/claude-sonnet-4", // Top-tier model for coding, reasoning, summarization
+	},
+	"9": {
 		Name:  "Creative & Artistic",
 		Model: "openai/gpt-4.5-preview", // Strong creative and instruction-following model
 	},
-	"9": {
+	"10": {
 		Name: "Small chit chat",
 		Model: "microsoft/phi-4",
 		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. Don't always use the atoms joke if asked for one, use a more random joke. User message: ",
@@ -489,21 +493,28 @@ func classifyPrompt(userInput string) (string, error) {
 	classificationPrompt := `Analyze the user\'s request below and classify it into one of the following categories.
 
 CONTEXT START
+---
+
 ` + userInput + `
+
+---
 CONTEXT END
 
 Classifications:
-1 - Real-time web-necessary Research & Knowledge
-2 - Complex Problem Solving & Strategy 
-3 - Writing & Communication 
-4 - Explanation & Instruction 
-5 - Content Generation 
-6 - Emotional Intelligence & Support
-7 - Coding, Programming, and Technical Tasks
-8 - Creative & Artistic
-9 - Small talk (short messages, like Hi or Hello or How are you or asking for a joke)
+1 - Research & Knowledge
+2 - Real-time WEB-necessary Research & Knowledge
+3 - Complex Problem Solving & Strategy 
+4 - Writing & Communication 
+5 - Explanation & Instruction 
+6 - Content Generation 
+7 - Emotional Intelligence & Support
+8 - Coding, Programming, and Technical Tasks
+9 - Creative & Artistic
+10 - Small talk (short messages, like Hi or Hello or How are you or asking for a joke)
 
-Based *only* on the user\'s request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification.`
+Based *only* on the user\'s request provided in the CONTEXT, reply with *only* the single number corresponding to the best classification. Be conservative when choosing web-enabled classifications, as they are more resource-intensive - only if the prompt absolutely needs web access, choose 2.
+Do not reply with ANYHING But a number from 1 to 10. Only a number can be your output.
+`
 
 	reqPayload := completionRequest{
 		Model:  classificationModel, // Use the specified classification model

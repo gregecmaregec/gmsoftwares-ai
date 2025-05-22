@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Privacy from './components/Privacy'
 import About from './components/About'
-import { Brain, Send, ClipboardCopy, Check } from 'lucide-react'
+import { Brain, Send, ClipboardCopy, Check, Globe } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown' // For components prop typing
 import remarkGfm from 'remark-gfm'
@@ -28,6 +28,7 @@ interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
   model?: string; // Stores actual model from API or 'classifying' or pre-selected model
+  reasoning?: string; // To store the thinking/reasoning output
 }
 
 // Cookie Disclaimer Component
@@ -73,15 +74,17 @@ const CookieDisclaimer = () => {
 const ALL_MODEL_OPTIONS = [
   // top of the line
   { id: 'auto', name: 'auto'},
+  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'Anthropic' },
+  { id: 'anthropic/claude-opus-4', name: 'Claude Opus 4', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
   { id: 'x-ai/grok-3-mini-beta', name: 'Grok 3 Mini β', provider: 'xAI' },
-  { id: 'x-ai/grok-3-mini-beta:online', name: 'Grok 3 Mini β + Web Search', provider: 'xAI' },
+  { id: 'x-ai/grok-3-beta', name: 'Grok 3 β', provider: 'xAI' },
   { id: 'openai/o4-mini-high', name: 'GPT-o4 Mini High', provider: 'OpenAI' },
   { id: 'openai/codex-mini', name: 'OpenAI Codex Mini', provider: 'OpenAI' },
-  { id: 'anthropic/claude-3.7-sonnet:thinking', name: 'Claude 3.7 Sonnet (Thinking)', provider: 'Anthropic' },
-  { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
-  { id: 'google/gemini-2.5-flash-preview-05-20', name: 'Gemini 2.5 Flash Preview 05 20', provider: 'Google' },
   { id: 'openai/gpt-4.1', name: 'GPT-4.1', provider: 'OpenAI' },
   { id: 'openai/gpt-4.5-preview', name: 'GPT-4.5 Preview', provider: 'OpenAI' },
+  { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro Preview', provider: 'Google' },
+  { id: 'google/gemini-2.5-flash-preview-05-20', name: 'Gemini 2.5 Flash Preview 05 20', provider: 'Google' },
   { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek Chat V3 0324', provider: 'DeepSeek' },
   // the rest
   { id: 'amazon/nova-lite-v1', name: 'Nova Lite V1', provider: 'Amazon' },
@@ -109,12 +112,23 @@ const ALL_MODEL_OPTIONS = [
   { id: 'openai/o3-mini', name: 'GPT-o3 Mini', provider: 'OpenAI' },
   { id: 'openai/o4-mini', name: 'GPT-o4 Mini', provider: 'OpenAI' },
   { id: 'qwen/qwen-2.5-7b-instruct', name: 'Qwen 2.5 7B Instruct', provider: 'Qwen' },
-  { id: 'x-ai/grok-3-beta', name: 'Grok 3 β', provider: 'xAI' }
+
 ];
+
+// Helper function to get display name for a model
+const getModelDisplayName = (modelId: string): string => {
+  const isOnline = modelId.endsWith(':online');
+  const baseModelId = isOnline ? modelId.replace(':online', '') : modelId;
+  const baseModel = ALL_MODEL_OPTIONS.find(m => m.id === baseModelId);
+  const baseName = baseModel?.name || baseModelId;
+  return isOnline ? `${baseName} + Web Search` : baseName;
+};
 
 // Define the set of top-tier model IDs
 const TOP_TIER_MODEL_IDS = new Set([
   'auto',
+  'anthropic/claude-opus-4',
+  'anthropic/claude-sonnet-4',
   'x-ai/grok-3-mini-beta',
   'x-ai/grok-3-mini-beta:online',
   'openai/o4-mini-high',
@@ -124,7 +138,9 @@ const TOP_TIER_MODEL_IDS = new Set([
   'openai/gpt-4.1',
   'openai/gpt-4.5-preview',
   'deepseek/deepseek-chat-v3-0324',
-  'openai/codex-mini'
+  'openai/codex-mini',
+  'google/gemini-2.5-flash-preview-05-20',  
+  'x-ai/grok-3-beta'
 ]);
 
 function App() {
@@ -135,6 +151,7 @@ function App() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [modelSearchTerm, setModelSearchTerm] = useState('');
   const [isAiResponding, setIsAiResponding] = useState(false);
+  const [isWebSearchEnabled, setIsWebSearchEnabled] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -236,7 +253,7 @@ function App() {
           'Accept': 'text/event-stream',
         },
         body: JSON.stringify({
-          model: selectedModel,
+          model: selectedModel === 'auto' ? selectedModel : (isWebSearchEnabled ? `${selectedModel}:online` : selectedModel),
           stream: true,
           messages: messagesForApi,
         }),
@@ -306,6 +323,17 @@ function App() {
                       )
                     );
                   }
+                  // Check for reasoning
+                  const reasoningContent = chunk.choices[0].delta.reasoning;
+                  if (reasoningContent) {
+                    setMessages(prev =>
+                      prev.map(msg =>
+                        msg.id === aiMessageId
+                          ? { ...msg, reasoning: (msg.reasoning || '') + reasoningContent }
+                          : msg
+                      )
+                    );
+                  }
                 }
                 if (chunk.usage) {
                   console.log('API Usage:', chunk.usage);
@@ -333,6 +361,17 @@ function App() {
                                 : msg
                             )
                         );
+                    }
+                    // Check for reasoning in final accumulated data
+                    const reasoningContent = chunk.choices[0].delta.reasoning;
+                    if (reasoningContent) {
+                      setMessages(prev =>
+                        prev.map(msg =>
+                          msg.id === aiMessageId
+                            ? { ...msg, reasoning: (msg.reasoning || '') + reasoningContent }
+                            : msg
+                        )
+                      );
                     }
                 }
             } catch(e) {
@@ -387,13 +426,20 @@ function App() {
                         {message.model === 'classifying' ? (
                           <span className="classifying-indicator">classifying<span className="dots"><span>.</span><span>.</span><span>.</span></span></span>
                         ) : (
-                          ALL_MODEL_OPTIONS.find(m => m.id === message.model)?.name || message.model
+                          getModelDisplayName(message.model)
                         )}
+                      </div>
+                    )}
+                    {message.sender === 'ai' && message.reasoning && (
+                      <div className="message-reasoning">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {message.reasoning}
+                        </ReactMarkdown>
                       </div>
                     )}
                     <div className={`message ${message.sender}`}>
                       <div className="message-content">
-                        {message.sender === 'ai' && message.content === '' ? (
+                        {message.sender === 'ai' && message.content === '' && !message.reasoning ? (
                           <div className="loading-dots-container">
                             <span className="loading-dot"></span>
                             <span className="loading-dot"></span>
@@ -479,7 +525,7 @@ function App() {
                     placeholder={
                       isFocused ? "" : 
                       selectedModel === 'auto' ? "Ask Artificial Intelligence" :
-                      `Ask ${ALL_MODEL_OPTIONS.find(m => m.id === selectedModel)?.name || 'Selected Model'}`
+                      `Ask ${getModelDisplayName(selectedModel)}`
                     }
                     className="search-input"
                     rows={1}
@@ -504,6 +550,19 @@ function App() {
                     className={`model-selector-header ${isDropdownOpen ? 'active' : ''}`}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
+                    {selectedModel !== 'auto' && (
+                      <div 
+                        className={`web-search-toggle ${isWebSearchEnabled ? 'active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsWebSearchEnabled(!isWebSearchEnabled);
+                        }}
+                        title={isWebSearchEnabled ? 'Disable web search' : 'Enable web search'}
+                      >
+                        <Globe size={12} />
+                        <span>Web Search</span>
+                      </div>
+                    )}
                     <span className="selected-model">
                       {selectedModel === 'auto' && <Brain size={14} className="brain-icon" />}
                       {selectedModel === 'auto' ? ALL_MODEL_OPTIONS.find(model => model.id === selectedModel)?.name : 'manual'}

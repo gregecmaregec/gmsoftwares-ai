@@ -421,6 +421,7 @@ h1 {
   padding: 6px 8px;
   border-radius: 16px;
   transition: all 0.2s ease;
+  transform: translate(-2px, 2px);
 }
 
 .model-selector-header:hover {
@@ -430,6 +431,9 @@ h1 {
 
 .model-selector-header.active {
   opacity: 1;
+}
+
+.model-selector-header.active .selected-model::before {
   background-color: rgba(125, 125, 125, 0.08);
 }
 
@@ -441,6 +445,22 @@ h1 {
   color: var(--text-color);
   opacity: 0.7;
   font-weight: 300;
+  position: relative;
+  z-index: 1;
+  transform: translateY(-0.5px);
+}
+
+.selected-model::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -8px;
+  right: -8px;
+  bottom: -4px;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+  z-index: -1;
 }
 
 [data-theme="dark"] .selected-model {
@@ -451,6 +471,67 @@ h1 {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
   opacity: 0.9;
+}
+
+.web-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: var(--text-color);
+  opacity: 0.5;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  vertical-align: baseline;
+  position: relative;
+  z-index: 1;
+  transform: translateX(-4px);
+  background-color: transparent !important;
+}
+
+.web-search-toggle::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  z-index: -1;
+}
+
+.web-search-toggle:hover::before {
+  background-color: rgba(125, 125, 125, 0.08);
+}
+
+.web-search-toggle:hover {
+  opacity: 0.8;
+  background-color: transparent !important;
+}
+
+.web-search-toggle.active {
+  opacity: 1;
+  color: #6366f1;
+}
+
+.web-search-toggle.active::before {
+  background-color: rgba(99, 102, 241, 0.1);
+  border-color: transparent;
+  transform: translateY(0px);
+}
+
+[data-theme="dark"] .web-search-toggle.active {
+  color: #8b5cf6;
+}
+
+[data-theme="dark"] .web-search-toggle.active::before {
+  background-color: rgba(99, 102, 241, 0.15);
+  border-color: transparent;
 }
 
 /*
@@ -1035,4 +1116,39 @@ h1 {
 
 .copy-code-button svg {
   stroke: currentColor;
+}
+
+/* Common styling for all message timestamps */
+.message-metadata.message-timestamp {
+  font-size: 0.65rem; /* Made smaller */
+  color: var(--text-color-secondary);
+  margin-top: 4px;
+  opacity: 0.6; /* Made more transparent */
+}
+
+/* User specific timestamp alignment */
+.message-entry.user .message-metadata.message-timestamp {
+  align-self: flex-end;
+}
+
+/* AI specific timestamp alignment */
+.message-entry.ai .message-metadata.message-timestamp {
+  align-self: flex-start;
+}
+
+.message-reasoning {
+  opacity: 0.7;
+  margin-bottom: 8px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(128, 128, 128, 0.5);
+  font-size: 0.9em;
+  color: var(--text-color-primary); /* Ensure it uses theme color */
+}
+
+.message-reasoning p {
+  margin-bottom: 0.5em; /* Spacing between paragraphs in reasoning */
+}
+
+.message-reasoning strong {
+  font-weight: 600; /* Make bold text in reasoning a bit more prominent */
 }
