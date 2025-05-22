@@ -424,10 +424,7 @@ h1 {
   transform: translate(-2px, 2px);
 }
 
-.model-selector-header:hover {
-  opacity: 0.9;
-  background-color: rgba(125, 125, 125, 0.05);
-}
+/* Remove general header hover, add specific element hovers instead */
 
 .model-selector-header.active {
   opacity: 1;
@@ -467,6 +464,10 @@ h1 {
   opacity: 0.9; /* Increase opacity for better visibility in dark mode */
 }
 
+.selected-model:hover::before {
+  background-color: rgba(125, 125, 125, 0.05);
+}
+
 .brain-icon {
   stroke-width: 1.5;
   stroke: url(#brain-gradient);
@@ -476,12 +477,12 @@ h1 {
 .web-search-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   padding: 2px 6px;
   font-size: 0.65rem;
   font-weight: 300;
   color: var(--text-color);
-  opacity: 0.5;
+  opacity: 0.42;
   transition: opacity 0.2s ease, color 0.2s ease;
   cursor: pointer;
   vertical-align: baseline;
@@ -489,6 +490,10 @@ h1 {
   z-index: 1;
   transform: translateX(-4px);
   background-color: transparent !important;
+}
+
+.web-search-toggle svg {
+  transform: translateX(-3px);
 }
 
 .web-search-toggle::before {
@@ -719,6 +724,21 @@ h1 {
   color: var(--text-color);
   opacity: 0.5;
   text-align: center;
+}
+
+/* Auto option styling */
+.model-options-list .model-option:first-child {
+  /* Keep default left alignment */
+}
+
+.model-options-list .model-option:first-child .model-option-name {
+  color: #6366f1;
+  font-weight: 500;
+  opacity: 1;
+}
+
+[data-theme="dark"] .model-options-list .model-option:first-child .model-option-name {
+  color: #8b5cf6;
 }
 
 .search-input-wrapper.focused {
@@ -1143,6 +1163,8 @@ h1 {
   border-left: 2px solid rgba(128, 128, 128, 0.5);
   font-size: 0.9em;
   color: var(--text-color-primary); /* Ensure it uses theme color */
+  max-width: 85%; /* Match the AI message max-width */
+  align-self: flex-start; /* Match the AI message alignment */
 }
 
 .message-reasoning p {

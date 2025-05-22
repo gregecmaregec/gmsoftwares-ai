@@ -152,6 +152,7 @@ function App() {
   const [modelSearchTerm, setModelSearchTerm] = useState('');
   const [isAiResponding, setIsAiResponding] = useState(false);
   const [isWebSearchEnabled, setIsWebSearchEnabled] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0); // Key to trigger animation restart
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -387,6 +388,15 @@ function App() {
       ));
     } finally {
       setIsAiResponding(false);
+      // Reset input focus to trigger animations and placeholder text
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+      setIsFocused(false);
+      // Trigger animation restart by incrementing the key
+      setTimeout(() => {
+        setAnimationKey(prev => prev + 1);
+      }, 100); // Small delay to ensure focus state is updated
     }
   };
   
@@ -514,7 +524,10 @@ function App() {
               </div>
               
               <form onSubmit={handleSubmit} className="search-form">
-                <div className={`search-input-wrapper ${isFocused ? 'focused' : ''}`}>
+                <div 
+                  className={`search-input-wrapper ${isFocused ? 'focused' : ''}`}
+                  key={`input-wrapper-${animationKey}`}
+                >
                   <textarea
                     ref={inputRef}
                     value={inputValue}
