@@ -30,6 +30,7 @@ html.loaded, html.loaded body {
   --button-bg: #f2f1f1;
   --button-text: #374151;
   --focus-color: rgba(59, 130, 246, 0.5);
+  --markdown-title-color: #654343; /* Added for markdown title color in light mode */
 }
 
 /* Dark theme */
@@ -43,6 +44,7 @@ html.loaded, html.loaded body {
   --button-bg: #1f2937;
   --button-text: #e5e7eb;
   --focus-color: rgba(96, 165, 250, 0.5);
+  --markdown-title-color: var(--text-color); /* Titles in dark mode use general text color */
 }
 
 html {
@@ -69,11 +71,31 @@ a:hover {
   color: var(--link-hover-color);
 }
 
+h1, h2, h3 {
+  color: var(--markdown-title-color); /* Use the variable for h1, h2, h3 color */
+}
+
 h1 {
   font-size: 2rem;
   line-height: 1.2;
   font-weight: 600;
   margin: 0 0 1rem 0;
+  /* color property moved to the h1, h2, h3 group rule */
+}
+
+/* Basic styling for h2 and h3, if not already present elsewhere for general use */
+h2 {
+  font-size: 1.75rem; /* Example size */
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 0 0.9rem 0;
+}
+
+h3 {
+  font-size: 1.5rem; /* Example size */
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 0 0.8rem 0;
 }
 
 button {

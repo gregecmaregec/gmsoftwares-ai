@@ -28,13 +28,6 @@
   padding-bottom: 9vh;
 }
 
-h1 {
-  font-size: 2rem;
-  font-weight: 500;
-  margin-bottom: 2rem;
-  color: var(--text-color);
-}
-
 .conversation-container {
   width: 100%;
   max-width: 600px;
