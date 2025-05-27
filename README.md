@@ -1,4 +1,4 @@
-SPDX license identifier: MIT
+SPDX licence identifier: MIT
 
 
 accompanying backend is written in Go
