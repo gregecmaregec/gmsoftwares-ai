@@ -7,7 +7,7 @@ you need to export API key (or have it in .env), then go run main.go
 trigger it with:
 
 curl -X POST http://localhost:42069/api/chat \
-     -H "Authorization: password" \
+     -H "Authorization: ljubimte" \
      -H "Content-Type: application/json" \
      -H "Accept: text/event-stream" \
      -d '{
@@ -18,4 +18,4 @@ curl -X POST http://localhost:42069/api/chat \
        ]
      }'
 
-note: set up a password in main.go
+note: set up a password for the Authorization in main.go
