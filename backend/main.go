@@ -17,14 +17,16 @@ import (
 const (
 	listenAddr          = ":42069"
 	authHeaderKey       = "Authorization"
-	authHeaderValue     = "ljubimte"      // Development value
+	authHeaderValue     = "ljubimte" // Development value
 	ollamaURL           = "http://localhost:11434/api/generate"
 	openrouterURL       = "https://openrouter.ai/api/v1/chat/completions"
-	classificationModel = "gemma3:4b"     // Using gemma3:4b for classification
+	classificationModel = "gemma3:4b" // Using gemma3:4b for classification
 	autoModelIdentifier = "auto"
 )
 
-const (ContextMaxChars = 4000 * 3) // Assuming average 3 chars per token for context window estimation
+const (
+	ContextMaxChars = 4000 * 3
+) // Assuming average 3 chars per token for context window estimation
 
 // classificationMap defines the different model capabilities the backend can handle.
 var classificationMap = map[string]struct {
@@ -69,9 +71,9 @@ var classificationMap = map[string]struct {
 		Model: "openai/gpt-4.5-preview", // Strong creative and instruction-following model
 	},
 	"10": {
-		Name: "Small chit chat",
-		Model: "microsoft/phi-4",
-		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. Don't always use the atoms joke if asked for one, use a more random joke. User message: ",
+		Name:             "Small chit chat",
+		Model:            "microsoft/phi-4",
+		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. If and only if asked for a joke, do not. User message: ",
 	},
 }
 
@@ -301,7 +303,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if classificationPerformed && classificationNumber == "5" {
 			log.Println("Handling classification '5' (Content Generation) by streaming static JSON.")
 			streamStaticContentForпять(w, chosenModel, classificationNameForMetadata) // Renamed "5" to "пять" to avoid syntax issues with numbers
-			sendDoneSSE(w)                                                             // Send data: [DONE] after static content
+			sendDoneSSE(w)                                                            // Send data: [DONE] after static content
 		} else {
 			// Stream response from OpenRouter for other classifications or direct model
 			forwardedDone, streamErr := streamOpenRouterResponse(r.Context(), w, requestBody.Messages, chosenModel)
@@ -338,11 +340,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(map[string]interface{}{
-				"model":              chosenModel,
-				"classification":     classificationNameForMetadata,
-				"response_type":      "structured_json",
-				"simulated_choices":  []interface{}{map[string]interface{}{"message": map[string]interface{}{"role": "assistant", "content": staticResponse}}},
-				"simulated_usage":    map[string]int{"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+				"model":             chosenModel,
+				"classification":    classificationNameForMetadata,
+				"response_type":     "structured_json",
+				"simulated_choices": []interface{}{map[string]interface{}{"message": map[string]interface{}{"role": "assistant", "content": staticResponse}}},
+				"simulated_usage":   map[string]int{"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
 			})
 
 		} else {
@@ -781,7 +783,7 @@ func streamOpenRouterResponse(ctx context.Context, w http.ResponseWriter, messag
 				}
 			}
 		}
-		
+
 		if trimmedLine == "data: [DONE]" {
 			log.Println("Successfully forwarded data: [DONE] from OpenRouter.")
 			forwardedDone = true

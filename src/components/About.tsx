@@ -18,7 +18,7 @@ const About: React.FC = () => {
         
         <h2>Technology</h2>
         <p>
-          I built the API in Go, and the frontend in React / Vite. The API talks to a local AI on a 3070ti I have spinning on a server I set up in my student dorm room, which talks to the internet through a Cloudlfared tunnel. The local AI then classifies the prompt and chooses the best AI. Furthemore, you can manually select which AI you want to answer your question.  AI response is a wrapper built around OpenRouter. In the future, for some models probably I will use the respective model's API directly.
+          I built the API in Go, and the frontend in React / Vite. The API talks to a local AI on a 3070ti I have spinning on a server I set up in my student dorm room, which talks to the internet through a Cloudflared tunnel. The local AI then classifies the prompt and chooses the best AI. Furthemore, you can manually select which AI you want to answer your question.  AI response is a wrapper built around OpenRouter. In the future, for some models probably I will use the respective model's API directly.
         </p>
         
         <h2>Future Plans</h2>

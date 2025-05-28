@@ -10,10 +10,6 @@ const Privacy: React.FC = () => {
     }}>
       <h1>Privacy Policy</h1>
       
-      <p>
-        This is a simple privacy policy page for the gmsoftwares.ai application.
-      </p>
-      
       <div className="privacy-section">
         <h2>Information I Collect</h2>
         <p>When you use this service, this is an example of a log I make:</p>
