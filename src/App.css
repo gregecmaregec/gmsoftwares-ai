@@ -1040,6 +1040,12 @@
   margin-bottom: 1em;
 }
 
+/* Add bold text styling to match heading colors */
+.message.ai .message-content strong,
+.message.ai .message-content b {
+  color: var(--markdown-title-color); /* Use the same color variable as headings */
+}
+
 /* Special case for first h1 in the message content */
 .message.ai .message-content h1:first-child {
   margin-top: 1em;

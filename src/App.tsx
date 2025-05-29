@@ -303,7 +303,7 @@ function App() {
               }
             }
             continue;
-          }
+          } 
 
           if (line.startsWith('data: ')) {
             const jsonData = line.substring(5).trim();
