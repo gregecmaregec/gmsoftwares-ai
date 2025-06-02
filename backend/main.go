@@ -17,7 +17,7 @@ import (
 const (
 	listenAddr          = ":42069"
 	authHeaderKey       = "Authorization"
-	authHeaderValue     = "ljubimte" // Development value
+	authHeaderValue     = "loveyoudearhuman" // not real value
 	ollamaURL           = "http://localhost:11434/api/generate"
 	openrouterURL       = "https://openrouter.ai/api/v1/chat/completions"
 	classificationModel = "gemma3:4b" // Using gemma3:4b for classification
@@ -72,8 +72,8 @@ var classificationMap = map[string]struct {
 	},
 	"10": {
 		Name:             "Small chit chat",
-		Model:            "microsoft/phi-4",
-		AdditionalPrompt: "Instruction for response: Please use 1 emoji in your response to the following user message if appropriate. If and only if asked for a joke, do not. User message: ",
+		Model:            "meta-llama/llama-4-scout",
+		AdditionalPrompt: "Maybe use emoji. Maybe not! just be yourself. User message: ",
 	},
 }
 
