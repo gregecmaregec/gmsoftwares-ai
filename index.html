@@ -4,31 +4,82 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/ai-ico.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#F7EFE6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Artificial Intelligence</title>
     <meta property="og:title" content="Artificial Intelligence" />
     <meta property="og:description" content="All the best AI models in one place" />
     <meta property="og:image" content="/transformer_thumbnail.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://ai.gmsoftwares.com" />
+    <style>
+      /* Ensure no gaps around content and proper safe area handling */
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        /* Prevent overscroll bounce on iOS to avoid color mismatch */
+        overscroll-behavior: none;
+        /* Support for safe areas (notch) */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      
+      #root {
+        width: 100%;
+        min-height: 100vh;
+        /* Ensure root also respects safe areas */
+        min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      }
+    </style>
     <script>
       // Prevent flash of wrong theme by setting the theme before page renders
       (function() {
         const savedTheme = localStorage.getItem('theme');
-        const isDark = savedTheme === 'dark' || 
-          (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
         
-        if (isDark) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          // Set background color directly to avoid flash
-          document.documentElement.style.backgroundColor = '#000000';
-          // When DOM is ready, set body background too
-          document.addEventListener('DOMContentLoaded', function() {
-            document.body.style.backgroundColor = '#000000';
-          });
+        // Apply the saved theme immediately
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
         } else {
-          // For light theme, ensure no dark background lingers
-          document.documentElement.style.backgroundColor = '#F7EFE6';
+          // Default to light theme if no saved preference
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
         }
+        
+        // Set immediate background colors for each theme to prevent flash
+        const themeColors = {
+          'light': '#F7EFE6',
+          'dark': '#1E1E1E',
+          'ultra-black': '#000000'
+        };
+        
+        const currentTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const bgColor = themeColors[currentTheme] || themeColors.light;
+        
+        // Apply background immediately to html and body
+        document.documentElement.style.backgroundColor = bgColor;
+        document.documentElement.style.transition = 'none'; // Prevent transition on load
+        
+        // Update theme-color meta tag for browser chrome
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute('content', bgColor);
+        }
+        
+        // When DOM is ready, set body background and re-enable transitions
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.style.backgroundColor = bgColor;
+          // Re-enable transitions after a brief delay
+          setTimeout(() => {
+            document.documentElement.style.transition = '';
+            document.documentElement.classList.add('loaded');
+          }, 50);
+        });
       })();
     </script>
   </head>

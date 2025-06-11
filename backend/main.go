@@ -17,7 +17,7 @@ import (
 const (
 	listenAddr          = ":42069"
 	authHeaderKey       = "Authorization"
-	authHeaderValue     = "loveyoudearhuman" // not real value
+	authHeaderValue     = "ljubimte" // Development value
 	ollamaURL           = "http://localhost:11434/api/generate"
 	openrouterURL       = "https://openrouter.ai/api/v1/chat/completions"
 	classificationModel = "gemma3:4b" // Using gemma3:4b for classification

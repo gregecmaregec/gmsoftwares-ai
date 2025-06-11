@@ -1,43 +1,33 @@
 @import "tailwindcss";
 
 /* No transition during page load to prevent flash */
-html:not(.loaded) {
-  transition: none !important;
-}
-
-html:not(.loaded) * {
-  transition: none !important;
-}
-
-/* Apply transitions after page load for smooth theme switching */
-html.loaded {
-  transition: background-color 0.3s ease !important;
-}
-
-html.loaded body {
-  transition: background-color 0.3s ease, color 0.3s ease !important;
-}
-
-html.loaded * {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Essential html styling */
 html {
-  /* Ensure background extends to all edges including safe areas */
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  /* Prevent overscroll to avoid showing wrong background colors */
-  overscroll-behavior: none;
-  /* Support for iOS Safari safe areas */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  background-color: var(--bg-color);
+  transition: none !important;
 }
+
+/* Apply transition after page load */
+html.loaded, html.loaded body {
+  transition: background-color 0.3s, color 0.3s !important;
+}
+
+/* Ensure smooth transitions for all themes including ultra-black */
+html.loaded[data-theme="ultra-black"], 
+html.loaded[data-theme="ultra-black"] body {
+  transition: background-color 0.3s, color 0.3s !important;
+}
+
+/* REMOVED - This was causing the jarring transition to ultra-black */
+/*
+/* Disable background transitions for ultra-black theme to prevent flash */
+/*
+html.loaded[data-theme="ultra-black"], 
+html.loaded[data-theme="ultra-black"] body,
+html.loaded[data-theme="ultra-black"] * {
+  transition: color 0.3s !important;
+  /* No background-color transition for instant OLED black */
+/*
+}
+*/
 
 /* Search input border pulse animation */
 @keyframes border-pulse {
@@ -94,12 +84,6 @@ html {
   /* User message gradient colors for light theme */
   --user-message-gradient-start: rgba(99, 102, 241, 0.7);
   --user-message-gradient-end: rgba(139, 92, 246, 0.7);
-  
-  /* Model name color for light theme - hot purple/magenta */
-  --model-name-color: #d946ef;
-  
-  /* Auto model color for light theme - matches user message gradient */
-  --auto-model-color: #6366f1;
 }
 
 /* Dark theme */
@@ -132,27 +116,21 @@ html {
   /* User message gradient colors for dark theme - more vibrant */
   --user-message-gradient-start: rgba(139, 92, 246, 0.8);
   --user-message-gradient-end: rgba(192, 132, 252, 0.8);
-  
-  /* Model name color for dark theme - bright purple */
-  --model-name-color: #a855f7;
-  
-  /* Auto model color for dark theme - matches user message gradient */
-  --auto-model-color: #8b5cf6;
 }
 
 /* Ultra Black theme - Perfect for OLED devices with solarized colors */
 [data-theme="ultra-black"] {
-  --text-color: #f5e5e5; /* Solarized base0 - soft blue-gray */
+  --text-color: #F5E6E6; /* Solarized base0 - soft blue-gray */
   --bg-color: #000000; /* True black for OLED */
   --secondary-bg: #040404; /* Slightly off-black for depth */
   --pill-bg-color: #000000; /* Very dark gray for input areas */
   --link-color: #268bd2; /* Solarized blue */
-  --link-hover-color: #eab308; /* Solarized cyan */
+  --link-hover-color: #2aa198; /* Solarized cyan */
   --button-bg: #000000;
   --button-text: #93a1a1; /* Solarized base1 - lighter than base0 */
   --focus-color: rgba(38, 139, 210, 0.4); /* Solarized blue with transparency */
-  --markdown-title-color: #ffffff; /* Solarized yellow for titles */
-  --bold-text-color: #eab208bd; /* Solarized orange for bold text */
+  --markdown-title-color: #b58900; /* Solarized yellow for titles */
+  --bold-text-color: #cb4b16; /* Solarized orange for bold text */
   --user-message-text-color: #fdf6e3; /* Solarized base3 - warm white */
   
   /* SVG Gradient colors for ultra black theme - solarized accents */
@@ -170,12 +148,6 @@ html {
   /* User message gradient colors - solarized accent blend */
   --user-message-gradient-start: rgba(107, 85, 0, 0.9); /* Rich gold */
   --user-message-gradient-end: rgba(74, 51, 0, 0.9); /* Dark amber/bronze */
-  
-  /* Model name color for ultra-black theme - nice gold */
-  --model-name-color: #eab308;
-  
-  /* Auto model color for ultra-black theme - matches user message gradient */
-  --auto-model-color: #e6b800;
 }
 
 /* SVG gradient definitions using CSS variables */
@@ -249,26 +221,24 @@ html {
   }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-  /* Use min-height with safe areas for better mobile support */
-  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+html {
   background-color: var(--bg-color);
-  color: var(--text-color);
-  /* Ensure same transition timing as html and content */
-  transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
-  /* Prevent overscroll bounce which can reveal wrong background colors */
-  overscroll-behavior: none;
 }
 
-/* Remove the ultra-black override since CSS variables handle it consistently */
-/* [data-theme="ultra-black"] body {
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  /* Transition is now controlled by the html.loaded selectors above */
+  overflow-x: hidden;
+}
+
+/* Ensure ultra-black theme body is pure black immediately */
+[data-theme="ultra-black"] body {
   background-color: #000000 !important;
-} */
+}
 
 a {
   font-weight: 500;
@@ -369,6 +339,49 @@ button:focus {
 }
 */
 
+/* REMOVED - These rules were causing black flash during theme transitions
+/* Force immediate CSS variable application for ultra-black theme */
+/*
+[data-theme="ultra-black"] .search-input-wrapper,
+[data-theme="ultra-black"] .conversation-container,
+[data-theme="ultra-black"] .message,
+[data-theme="ultra-black"] .footer {
+  background-color: var(--bg-color, #000000) !important;
+  transition: background-color 0.3s ease, color 0.3s ease !important;
+}
+
+[data-theme="ultra-black"] .search-input-wrapper {
+  background-color: var(--pill-bg-color) !important;
+}
+
+/* Smooth theme transitions for all elements */
+/*
+[data-theme="ultra-black"] .search-input-wrapper,
+[data-theme="ultra-black"] .conversation-container,
+[data-theme="ultra-black"] .message,
+[data-theme="ultra-black"] .footer {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth theme transitions for all ultra-black elements */
+/*
+[data-theme="ultra-black"] .search-input-wrapper,
+[data-theme="ultra-black"] .conversation-container,
+[data-theme="ultra-black"] .message,
+[data-theme="ultra-black"] .footer {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Specific conversation container handling for ultra-black theme */
+/*
+[data-theme="ultra-black"] .conversation-container {
+  background-color: var(--bg-color) !important;
+  will-change: auto !important;
+  contain: none !important;
+  transition: background-color 0.3s ease !important;
+}
+*/
+
 /* Disable performance optimizations during theme transitions to prevent flashing */
 .conversation-container,
 .message-entry,
@@ -378,3 +391,31 @@ button:focus {
   transition: background-color 0.3s ease, color 0.3s ease !important;
 }
 
+/* Fix parent containers to prevent flash/layering issues */
+[data-theme="ultra-black"] .app-container,
+[data-theme="ultra-black"] .content-container {
+  background-color: var(--bg-color) !important;
+  transition: background-color 0.3s ease !important;
+}
+
+/* Ensure synchronized transitions for ultra-black theme */
+[data-theme="ultra-black"] .conversation-container,
+[data-theme="ultra-black"] .search-input-wrapper,
+[data-theme="ultra-black"] .message,
+[data-theme="ultra-black"] .footer,
+[data-theme="ultra-black"] body,
+[data-theme="ultra-black"] html {
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease !important;
+  transition-property: background-color, color !important;
+}
+*/
+
+/* Disable performance optimizations during theme transitions to prevent flashing */
+.conversation-container,
+.message-entry,
+.message {
+  will-change: auto !important;
+  contain: none !important;
+  transition: background-color 0.3s ease, color 0.3s ease !important;
+}

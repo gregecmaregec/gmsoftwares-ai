@@ -22,21 +22,10 @@ html.loaded * {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Essential html styling */
-html {
-  /* Ensure background extends to all edges including safe areas */
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  /* Prevent overscroll to avoid showing wrong background colors */
-  overscroll-behavior: none;
-  /* Support for iOS Safari safe areas */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  background-color: var(--bg-color);
+/* Ensure smooth transitions for all themes including ultra-black */
+html.loaded[data-theme="ultra-black"], 
+html.loaded[data-theme="ultra-black"] body {
+  transition: background-color 0.3s, color 0.3s !important;
 }
 
 /* Search input border pulse animation */
@@ -97,9 +86,6 @@ html {
   
   /* Model name color for light theme - hot purple/magenta */
   --model-name-color: #d946ef;
-  
-  /* Auto model color for light theme - matches user message gradient */
-  --auto-model-color: #6366f1;
 }
 
 /* Dark theme */
@@ -135,9 +121,6 @@ html {
   
   /* Model name color for dark theme - bright purple */
   --model-name-color: #a855f7;
-  
-  /* Auto model color for dark theme - matches user message gradient */
-  --auto-model-color: #8b5cf6;
 }
 
 /* Ultra Black theme - Perfect for OLED devices with solarized colors */
@@ -173,9 +156,6 @@ html {
   
   /* Model name color for ultra-black theme - nice gold */
   --model-name-color: #eab308;
-  
-  /* Auto model color for ultra-black theme - matches user message gradient */
-  --auto-model-color: #e6b800;
 }
 
 /* SVG gradient definitions using CSS variables */
@@ -376,5 +356,22 @@ button:focus {
   will-change: auto !important;
   contain: none !important;
   transition: background-color 0.3s ease, color 0.3s ease !important;
+}
+
+/* Essential html styling */
+html {
+  /* Ensure background extends to all edges including safe areas */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  /* Prevent overscroll to avoid showing wrong background colors */
+  overscroll-behavior: none;
+  /* Support for iOS Safari safe areas */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  background-color: var(--bg-color);
 }
 

@@ -3,18 +3,33 @@
 #root {
   width: 100%;
   min-height: 100vh;
+  /* Support safe areas for mobile devices */
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   margin: 0;
   padding: 0;
+  /* Ensure background covers all areas */
+  background-color: var(--bg-color);
+  /* Prevent overscroll to avoid background color issues */
+  overscroll-behavior: none;
 }
 
 .app-container {
   width: 100%;
   min-height: 100vh;
+  /* Support safe areas for mobile devices */
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
+  /* Add safe area padding */
+  padding-top: calc(1rem + env(safe-area-inset-top));
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  padding-left: calc(1rem + env(safe-area-inset-left));
+  padding-right: calc(1rem + env(safe-area-inset-right));
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
 .content-container {
@@ -26,6 +41,8 @@
   flex-grow: 1;
   justify-content: center;
   padding-bottom: 9vh;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
 .conversation-container {
@@ -39,6 +56,7 @@
   gap: 10px;
   margin-bottom: 20px;
   scrollbar-width: thin;
+  transition: background-color 0.3s ease;
 }
 
 .conversation-container::-webkit-scrollbar {
@@ -76,7 +94,8 @@
 }
 
 .model-name-highlight {
-  color: #be00be;
+  color: var(--model-name-color);
+  font-weight: 600;
 }
 
 .message-timestamp {
@@ -166,13 +185,15 @@
   animation: fadeIn 0.3s ease-in;
   margin-bottom: 4px;
   font-weight: 400;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .message.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.7), rgba(139, 92, 246, 0.7));
-  color: white;
+  background: linear-gradient(135deg, var(--user-message-gradient-start), var(--user-message-gradient-end));
+  color: var(--user-message-text-color);
   border-bottom-right-radius: 4px;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .message.ai {
@@ -180,6 +201,7 @@
   background-color: var(--secondary-bg);
   color: var(--text-color);
   border-bottom-left-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .search-form {
@@ -198,45 +220,28 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
   background-color: var(--pill-bg-color);
   border-radius: 24px;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.05);
   transition: all 0.3s ease;
-  box-shadow: none;
-  border: none;
-  overflow: hidden;
-  padding: 0;
-  position: relative;
-}
-
-/* Add the light beam effect that disappears on focus */
-.search-input-wrapper:not(.focused)::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(99, 102, 241, 0.15) 20%,
-    rgba(139, 92, 246, 0.15) 50%,
-    transparent
-  );
   z-index: 1;
-  animation: light-beam 4s cubic-bezier(0.4, 0.0, 0.2, 1) 1;
-  will-change: transform, opacity;
-  pointer-events: none;
-}
-
-/* Add subtle border glow that also disappears on focus */
-.search-input-wrapper:not(.focused) {
   animation: remove-box-shadow 4s ease-in-out 1 forwards;
 }
 
-/* Subtle pulsing border light effect */
-.search-input-wrapper:not(.focused)::after {
+@keyframes remove-box-shadow {
+  0% {
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.05);
+  }
+  95% {
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.02);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+/* Subtle pulsing border light effect that plays once on page load */
+.search-input-wrapper::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -261,8 +266,7 @@
 
 /* Disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion) {
-  .search-input-wrapper:not(.focused)::before,
-  .search-input-wrapper:not(.focused)::after {
+  .search-input-wrapper::after {
     animation: none;
     opacity: 0.6;
   }
@@ -280,30 +284,6 @@
   }
   100% {
     opacity: 0;
-  }
-}
-
-@keyframes light-beam {
-  0% {
-    left: -100%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes remove-box-shadow {
-  0% {
-    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.05);
-  }
-  95% {
-    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.02);
-  }
-  100% {
-    box-shadow: none;
   }
 }
 
@@ -382,6 +362,7 @@
 
 .search-input:focus {
   outline: none;
+  border: none;
   text-align: left;
 }
 
@@ -553,9 +534,22 @@
 }
 */
 
+/* Standalone search pill - completely separate component */
+.model-search-pill {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: auto;
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  padding: 0; /* Removed padding for cleaner look */
+  width: 280px;
+  z-index: 11; /* Higher than dropdown to appear above it */
+}
+
 .model-dropdown {
   position: absolute;
-  top: calc(100% + 4px); /* Adjusted to account for search input padding */
+  top: calc(100% + 45px); /* Reduced from 56px to 30px - half the previous gap */
   margin-top: 0; /* Remove previous margin-top */
   right: 0;
   left: auto;
@@ -564,6 +558,7 @@
   width: 280px; /* Increased width to better accommodate search and longer names */
   max-height: 40vh; /* Limit max height */
   border-radius: 10px;
+  border: 1px solid rgba(125, 125, 125, 0.08); /* Understated border for the dropdown container */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   opacity: 0;
   pointer-events: none;
@@ -583,7 +578,7 @@
 /* Styles for when the dropdown opens upwards */
 .model-dropdown.opens-up {
   top: auto; /* Override the default top positioning */
-  bottom: calc(100% + 4px); /* Position its bottom edge above its container */
+  bottom: calc(100% + 30px); /* Reduced from 56px to 30px for consistent spacing upwards */
   transform: translateY(-10px); /* Initial transform for animation (when closed) */
 }
 
@@ -593,19 +588,12 @@
   pointer-events: all;
 }
 
-.model-search-input-wrapper {
-  padding: 8px;
-  border-bottom: 1px solid var(--border-color, rgba(125, 125, 125, 0.1));
-  display: flex;
-  align-items: center;
-}
-
 .model-search-input {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  border-radius: 16px;
-  border: none;
+  padding: 6px 10px; /* Keep the smaller search input */
+  font-size: 0.75rem; /* Keep the smaller font */
+  border-radius: 12px; /* Keep the tighter radius */
+  border: none; /* Keep borderless for clean look */
   background-color: var(--bg-color, rgba(125, 125, 125, 0.08));
   color: var(--text-color);
   transition: all 0.2s ease;
@@ -613,6 +601,21 @@
 
 .model-search-input:focus {
   outline: none;
+  /* Keep clean focus state */
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .model-dropdown {
+  border-color: rgba(200, 200, 200, 0.08);
+}
+
+/* Ultra-black theme specific styling */
+[data-theme="ultra-black"] .model-dropdown {
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+[data-theme="dark"] .model-search-pill {
+  background-color: var(--bg-color);
 }
 
 .model-options-list {
@@ -719,24 +722,24 @@
   text-align: center;
 }
 
-/* Auto option styling */
-.model-options-list .model-option:first-child {
+/* Auto option styling - using specific class instead of first-child to avoid search conflicts */
+.model-options-list .model-option.auto-model {
   /* Keep default left alignment */
 }
 
-.model-options-list .model-option:first-child .model-option-name {
-  color: #6366f1;
+.model-options-list .model-option.auto-model .model-option-name {
+  background: linear-gradient(9deg, var(--brain-gradient-start), var(--brain-gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-weight: 500;
   opacity: 1;
 }
 
-[data-theme="dark"] .model-options-list .model-option:first-child .model-option-name {
-  color: #8b5cf6;
-}
-
 .search-input-wrapper.focused {
-  box-shadow: 0 0 0 1px rgba(125, 125, 125, 0.1);
+  /* Removed focus border effect */
   border: none;
+  box-shadow: none;
 }
 
 @keyframes fadeIn {
@@ -753,6 +756,21 @@
   left: 0;
   padding: 0.5rem 1rem;
   background-color: var(--bg-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Move footer to top right on larger devices */
+@media (min-width: 768px) {
+  .footer {
+    width: auto;
+    top: 0;
+    bottom: auto;
+    left: auto;
+    right: 0;
+    justify-content: flex-end;
+    padding: 1rem 0.5rem;
+    margin-right: 1rem;
+  }
 }
 
 .footer-links {
@@ -770,7 +788,7 @@
   font-size: 0.75rem;
   cursor: pointer;
   opacity: 0.5;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s, color 0.3s;
 }
 
 .footer-link:hover {
@@ -783,6 +801,7 @@
   opacity: 0.3;
   font-size: 0.75rem;
   margin: 0 0.25rem;
+  transition: color 0.3s;
 }
 
 .logo {
@@ -1043,7 +1062,7 @@
 /* Add bold text styling to match heading colors */
 .message.ai .message-content strong,
 .message.ai .message-content b {
-  color: var(--markdown-title-color); /* Use the same color variable as headings */
+  color: var(--bold-text-color); /* Use the new bold text color variable */
 }
 
 /* Special case for first h1 in the message content */
@@ -1087,6 +1106,10 @@
   white-space: pre-wrap;    /* Allows wrapping, preserves spaces and newlines */
   word-break: break-all;    /* Force break for long words/strings if no other break points */
   position: relative;
+  /* Consistent font styling across all themes */
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, "Courier New", monospace !important;
+  font-size: 0.8rem !important;
+  line-height: 1.4 !important;
 }
 
 /* Styles for inline code */
@@ -1172,4 +1195,110 @@
 
 .message-reasoning strong {
   font-weight: 600; /* Make bold text in reasoning a bit more prominent */
+}
+
+/* Gaming Overlay Styles */
+.gaming-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000, #0a0a0a, #1a1a1a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.gaming-message {
+  text-align: center;
+  color: #f5e5e5;
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(230, 184, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.gaming-message h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #e6b800, #ffd700, #ffb347, #eab308, #f59e0b);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  text-shadow: 0 0 30px rgba(230, 184, 0, 0.3);
+}
+
+.gaming-message p {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  line-height: 1.6;
+  opacity: 0.9;
+  color: #f5e5e5;
+}
+
+.gaming-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(230, 184, 0, 0.2);
+}
+
+.gaming-footer small {
+  font-size: 1rem;
+  opacity: 0.7;
+  font-style: italic;
+  color: #eab308;
+}
+
+.gaming-footer a {
+  color: #ffd700;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.gaming-footer a:hover {
+  color: #e6b800;
+  text-decoration: none;
+  border-bottom: 1px solid #e6b800;
+  text-shadow: 0 0 10px rgba(230, 184, 0, 0.5);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .gaming-message {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .gaming-message h1 {
+    font-size: 2.5rem;
+  }
+  
+  .gaming-message p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gaming-message h1 {
+    font-size: 2rem;
+  }
+  
+  .gaming-message p {
+    font-size: 1rem;
+  }
 }

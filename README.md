@@ -1,10 +1,3 @@
-SPDX license identifier: MIT
+confidential do not disclose
 
-
-accompanying backend is written in Go
-you need to export API key (or have it in .env), then go run main.go
-
-Stack: 
-Frontend: Vite / React 
-
-Backend: Go + Ollama (inference engine)
+(c) Gregor Mihelac 2025, all rights reserved.

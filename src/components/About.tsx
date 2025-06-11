@@ -7,7 +7,7 @@ const About: React.FC = () => {
       <h1>About ai.gmsoftwares.com</h1>
       
       <p>
-        Welcome.
+        Welcome. It's just me - Gregor Mihelac, building this website. With any inquiries you can find me at gregor@mihelac.com 
       </p>
       
       <div className="privacy-section">
